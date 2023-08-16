@@ -1,1 +1,5 @@
 # VueJS-Project
+
+```
+cd aht
+```
