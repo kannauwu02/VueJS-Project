@@ -76,7 +76,7 @@
   </div>
 </template>
 <script>
-import axios from "axios"
+// import axios from "axios"
 
 export default {
   name: "ProductPage",
@@ -95,11 +95,11 @@ export default {
     }
   },
   async created() {
-    const endpoint = "https://dummyjson.com/products"
-
+    
     try {
-      const response = await axios.get(endpoint)
-      this.product = response.data.products[5]
+      const endpoint = await fetch("https://dummyjson.com/products")
+      const response = await endpoint.json()
+      this.product = response.products[0]
       this.updateButton(this.quantity)
       this.updateStar(this.product.rating)
     } catch (error) {
