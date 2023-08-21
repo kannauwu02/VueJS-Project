@@ -49,6 +49,10 @@
 			<div class="price">
 				<h2 class="heading">Price</h2>
 				<!-- add price here -->
+				<div v-for="category in categories" :key="category.id">
+					<h2>{{ category.name }}</h2>
+					<!-- Display other category data here -->
+				</div>
 			</div>
 		</div>
 	</div>
@@ -124,8 +128,27 @@
 </script> -->
 <script>
 	import PaginatorCategory from "@/components/PaginatorCategory.vue";
+	import { gql } from 'graphql-tag';
+
+	const GET_CATEGORIES = gql`
+	query GetCategories {
+		categories(filters: {}, pageSize: 20, currentPage: 1) {
+			items {
+				id
+				name
+				# Other fields you need
+			}
+		}
+	}
+	`;
 	export default {
 		name: "CategoryPage",
+		apollo: {
+			categories: {
+			query: GET_CATEGORIES,
+			// Other Apollo options here if needed
+			},
+		},
 		components: {
 			PaginatorCategory,
 		},
