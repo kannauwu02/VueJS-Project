@@ -1,16 +1,5 @@
 <template>
 <content>
-    <!-- <p> 
-      Chat with bot (He's free!):
-      <input @keyup.enter="getAnswer" v-model="question" /> 
-    </p>  -->
-    <!-- <img :src="msg"> -->
-    <!-- <p>{{ msg }}</p>
-    <div>
-        <router-link to="/">HomePage</router-link>
-        <router-link to="/CategoryPage">CategoryPage</router-link>
-        <router-link to="/ProductPage">ProductPage</router-link>
-    </div> -->
 	<div class="sidebar">
 		<div class="filtered-box">
 			<h2 class="heading">Filtered by</h2>
@@ -128,27 +117,21 @@
 </script> -->
 <script>
 	import PaginatorCategory from "@/components/PaginatorCategory.vue";
-	import { gql } from 'graphql-tag';
+	// import { gql } from 'graphql-tag';
 
-	const GET_CATEGORIES = gql`
-	query GetCategories {
-		categories(filters: {}, pageSize: 20, currentPage: 1) {
-			items {
-				id
-				name
-				# Other fields you need
-			}
-		}
-	}
-	`;
+	// const GET_CATEGORIES = gql`
+	// query GetCategories {
+	// 	categories(filters: {}, pageSize: 20, currentPage: 1) {
+	// 		items {
+	// 			id
+	// 			name
+	// 			# Other fields you need
+	// 		}
+	// 	}
+	// }
+	// `;
 	export default {
 		name: "CategoryPage",
-		apollo: {
-			categories: {
-			query: GET_CATEGORIES,
-			// Other Apollo options here if needed
-			},
-		},
 		components: {
 			PaginatorCategory,
 		},
@@ -160,7 +143,8 @@
 				currentPage: 1,
 				showDropdown: false,
 				selectedCategory: '',
-				selectedBrand: ''
+				selectedBrand: '',
+				categories: []
 			};
 		},
 		computed: {
@@ -201,6 +185,35 @@
 					this.msg = 'Error! Could not reach the API. ' + error 
 				} 
 			},
+
+			async getCategoryGraphQL() {
+				const query = {
+					"operationName": "fetchCategory",
+					"query":
+						`query fetchCategory {
+							categories(filters: {}, pageSize: 20, currentPage: 1) {
+								items {
+									id
+									name
+								}
+							}
+						}`,
+					"variables": {}
+				}
+				try {
+					let res = await fetch('https://magentoapi.merket.io/graphql', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ query }),
+					});
+					res = await res.json();
+					this.categories = res.data.categories.items;
+				} catch (error) {
+					console.log(error);
+				}
+			},
 			handlePageChange(newPage) {
 				this.currentPage = newPage;
 			},
@@ -230,6 +243,7 @@
 		created() {
 			// Call getCategory when the component is created
 			this.getCategory();
+			this.getCategoryGraphQL();
 		},
 	}
 </script>

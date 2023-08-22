@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "@/views/HomePage.vue";
 import CategoryPage from "@/views/CategoryPage.vue";
 import ProductPage from "@/views/ProductPage.vue";
+import ApiTest from "@/views/ApiTest.vue";
 
 const router = createRouter({
   mode: "hash",
@@ -21,6 +22,11 @@ const router = createRouter({
       path: "/ProductPage",
       name: "ProductPage",
       component: ProductPage,
+    },
+    {
+      path: "/ApiTest",
+      name: "ApiTest",
+      component: ApiTest,
     },
   ],
 });
