@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.8.1",
+    "@vue/apollo-option": "^4.0.0-beta.5",
     "apollo-boost": "^0.4.9",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",

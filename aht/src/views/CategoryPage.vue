@@ -38,7 +38,7 @@
 			<div class="price">
 				<h2 class="heading">Price</h2>
 				<!-- add price here -->
-				<div v-for="category in categories" :key="category.id">
+				<div v-for="category in categories.items" :key="category.id">
 					<h2>{{ category.name }}</h2>
 					<!-- Display other category data here -->
 				</div>
@@ -77,9 +77,15 @@
 </template>
 <script>
 	import PaginatorCategory from "@/components/PaginatorCategory.vue";
+	import { GET_CATEGORIES } from '@/graphql/queries';
 
 	export default {
 		name: "CategoryPage",
+		apollo: {
+			categories: {
+				query: GET_CATEGORIES,
+			},
+		},
 		components: {
 			PaginatorCategory,
 		},
@@ -93,7 +99,6 @@
 				showDropdownCategory: false,
 				selectedCategory: '',
 				selectedBrand: '',
-				categories: [],
 				sortOptions: [
 					{ label: 'Default', value: 'default' },
 					{ label: 'Name A-Z', value: 'name-asc' },
@@ -163,34 +168,6 @@
 				} 
 			},
 
-			async getCategoryGraphQL() {
-				const query = {
-					"operationName": "fetchCategory",
-					"query":
-						`query fetchCategory {
-							categories(filters: {}, pageSize: 20, currentPage: 1) {
-								items {
-									id
-									name
-								}
-							}
-						}`,
-					"variables": {}
-				}
-				try {
-					let res = await fetch('https://magentoapi.merket.io/graphql', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({ query }),
-					});
-					res = await res.json();
-					this.categories = res.data.categories.items;
-				} catch (error) {
-					console.log(error);
-				}
-			},
 			sortProducts() {
 				// Clone the products array to avoid mutating the original data
 				let sortedProducts = [...this.products];
@@ -248,7 +225,7 @@
 		created() {
 			// Call getCategory when the component is created
 			this.getCategory();
-			this.getCategoryGraphQL();
+			// this.getCategoryGraphQL();
 			// Create a copy of the original unsorted products
 		},
 	}
