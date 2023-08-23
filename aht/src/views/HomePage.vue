@@ -1,18 +1,7 @@
-<script>
-import { gql, useQuery } from '@apollo/client';
-
-const GET_DOGS = gql`
-  query GetDogs {
-    dogs {
-      id
-      breed
-    }
-  }
-`;
-</script>
 <template>
     <p>{{ msg }}</p>
-    <p>{{ world }}</p>
+    <p v-html="home.content"></p>
+    <p>{{ ping }}</p>
     <div>
         <router-link to="/">HomePage</router-link>
         <router-link to="/CategoryPage">CategoryPage</router-link>
@@ -26,11 +15,13 @@ const GET_DOGS = gql`
     data() {
       return {
         msg: "Home",
+        ping: '',
+        home: ''
       };
     },
     apollo: {
-      world: gql`query {
-        cmsPage(id: 2) {
+      home: gql`query {
+        home: cmsPage(id: 2) {
           content
           content_heading
           identifier
@@ -42,8 +33,8 @@ const GET_DOGS = gql`
           title
           type
           url_key
-        }
+        },
       }`
-    }
+    },
   }
 </script>
