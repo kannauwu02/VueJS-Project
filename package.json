@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "apollo-client": "^2.6.10",
+    "apollo-link-context": "^1.0.20",
+    "graphql": "^15.8.0",
+    "graphql-tag": "^2.12.6",
+    "vue": "^3.2.36",
+    "vue-apollo": "^3.1.0"
+  }
+}

@@ -1,18 +1,22 @@
 <template>
-    <p>{{ msg }}</p>
-    <div>
-        <router-link to="/">HomePage</router-link>
-        <router-link to="/CategoryPage">CategoryPage</router-link>
-        <router-link to="/ProductPage">ProductPage</router-link>
-    </div>
+  <div>
+    <ul>
+      <li v-for="category in categories" :key="category.url_key">
+        <router-link :to="`/category/${category.url_key}`">{{ category.name }}</router-link>
+      </li>
+    </ul>
+  </div>
 </template>
+
 <script>
-    export default {
-      name: "CategoryPage",
-      data() {
-        return {
-          msg: "Category"
-        };
-      },
-    }
+
+import { GET_CATEGORIES } from '@/graphql/queries';
+
+export default {
+  apollo: {
+    categories: {
+      query: GET_CATEGORIES,
+    },
+  },
+};
 </script>
