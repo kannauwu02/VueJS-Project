@@ -1,8 +1,9 @@
 <template>
     <div class="paginator">
         <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-        <span>{{ currentPage }} / {{ totalPages }}</span>
-        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+        <span v-if="totalPages === 0">0 / 0</span>
+        <span v-else>{{ currentPage }} / {{ totalPages }}</span>
+        <button @click="nextPage" :disabled="currentPage === totalPages || totalPages === 0">Next</button>
     </div>
 </template>
   

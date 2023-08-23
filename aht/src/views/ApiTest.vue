@@ -29,6 +29,7 @@ export default {
                     url: 'https://magentoapi.merket.io/graphql',
 					headers: {
 						'Content-Type': 'application/json',
+                        // 'Access-Control-Allow-Origin': '*',
 					},
 					data: query
 				});

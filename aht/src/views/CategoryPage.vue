@@ -19,8 +19,8 @@
 				<h2 class="heading">Types</h2>
 				<!-- add types here -->
 				<div class="dropdown">
-					<button class="dropdown-button" @click="toggleDropdown">Select a category</button>
-					<div class="dropdown-content" v-show="showDropdown">
+					<button class="dropdown-button" @click="toggleDropdownCategory">Select a category</button>
+					<div class="dropdown-content" v-show="showDropdownCategory">
 						<p v-for="(category, index) in uniqueCategories" :key="index" @click="selectCategory(category)">{{ category }}</p>
 					</div>
 				</div>
@@ -29,8 +29,8 @@
 				<h2 class="heading">Brands</h2>
 				<!-- add brands here -->
 				<div class="dropdown">
-					<button class="dropdown-button" @click="toggleDropdown">Select a brand</button>
-					<div class="dropdown-content" v-show="showDropdown">
+					<button class="dropdown-button" @click="toggleDropdownBrand">Select a brand</button>
+					<div class="dropdown-content" v-show="showDropdownBrand">
 						<p v-for="(brand, index) in uniqueBrand" :key="index" @click="selectBrand(brand)">{{ brand }}</p>
 					</div>
 				</div>
@@ -46,13 +46,23 @@
 		</div>
 	</div>
 	<div class="product-box">
-		<div class="paginator">
-			<!-- page -->
-			<PaginatorCategory
-				:current-page="currentPage"
-				:total-pages="totalPages"
-				@page-change="handlePageChange"
-			/>
+		<div class="product-header">
+			<div class="product-sort">
+				<div class="product-sort">
+					<label for="sort-select">Sort by:</label>
+					<select id="sort-select" v-model="selectedSortOption" @change="sortProducts">
+						<option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+					</select>
+				</div>
+			</div>
+			<div class="paginator">
+				<!-- page -->
+				<PaginatorCategory
+					:current-page="currentPage"
+					:total-pages="totalPages"
+					@page-change="handlePageChange"
+				/>
+			</div>
 		</div>
 		<div class="product-content">
 			<div class="product-container" v-for="product in displayedProducts" :key="product.id">
@@ -60,76 +70,14 @@
 				<p class="product-name">{{ product.title }}</p>
 				<p class="product-price">{{ product.price }}$</p>
 			</div>
+			<p v-if="displayedProducts.length === 0">No products match the filter.</p>
 		</div>
 	</div>
 </content>
 </template>
-<!-- <script>
-    export default {
-		name: "CategoryPage",
-		data() {
-			return {
-			msg: '',
-			question: '',
-			};
-		},
-		// watch: { 
-		// // whenever question changes, this function will run
-		//     question(newQuestion) { 
-		//       if (newQuestion.includes('?')) { 
-		//           this.getAnswer() 
-		//       } 
-		//     }
-		// },
-		methods: { 
-			async getAnswer() { 
-				this.msg = 'Thinking...' 
-				try { 
-					// let self = this
-					let res = await fetch('https://robomatic-ai.p.rapidapi.com/api', {
-					method: 'POST',
-					headers: {
-						'content-type': 'application/x-www-form-urlencoded',
-						'X-RapidAPI-Key': '9f4c7fccd7mshfd7a4b0c82a81ccp19924ajsn7f621b022fb8',
-						'X-RapidAPI-Host': 'robomatic-ai.p.rapidapi.com'
-					},
-					body: new URLSearchParams({
-						in: this.question,
-						op: 'in',
-						cbot: '1',
-						SessionID: 'RapidAPI1',
-						cbid: '1',
-						key: 'RHMN5hnQ4wTYZBGCF3dfxzypt68rVP',
-						ChatSource: 'RapidAPI',
-						duration: '1'
-					})
-					});
-					const response = await res.json();
-					this.msg = response.out;
-					
-
-				} catch (error) { 
-				this.msg = 'Error! Could not reach the API. ' + error 
-				} 
-			} 
-		}
-    }
-</script> -->
 <script>
 	import PaginatorCategory from "@/components/PaginatorCategory.vue";
-	// import { gql } from 'graphql-tag';
 
-	// const GET_CATEGORIES = gql`
-	// query GetCategories {
-	// 	categories(filters: {}, pageSize: 20, currentPage: 1) {
-	// 		items {
-	// 			id
-	// 			name
-	// 			# Other fields you need
-	// 		}
-	// 	}
-	// }
-	// `;
 	export default {
 		name: "CategoryPage",
 		components: {
@@ -141,20 +89,45 @@
 				msg: '',
 				itemsPerPage: 8,
 				currentPage: 1,
-				showDropdown: false,
+				showDropdownBrand: false,
+				showDropdownCategory: false,
 				selectedCategory: '',
 				selectedBrand: '',
-				categories: []
+				categories: [],
+				sortOptions: [
+					{ label: 'Default', value: 'default' },
+					{ label: 'Name A-Z', value: 'name-asc' },
+					{ label: 'Name Z-A', value: 'name-desc' },
+					{ label: 'Price Ascending', value: 'price-asc' },
+					{ label: 'Price Descending', value: 'price-desc' },
+				],
+				selectedSortOption: 'default',
 			};
 		},
 		computed: {
 			totalPages() {
-				return Math.ceil(this.products.length / this.itemsPerPage);
+				// Calculate the total number of pages based on filtered products
+				const filteredProducts = this.products.filter(product => {
+					const categoryMatch = !this.selectedCategory || product.category === this.selectedCategory;
+					const brandMatch = !this.selectedBrand || product.brand === this.selectedBrand;
+					return categoryMatch && brandMatch;
+				});
+				
+				return Math.ceil(filteredProducts.length / this.itemsPerPage);
 			},
 			displayedProducts() {
+				// Apply filters
+				let filteredProducts = this.products;
+				if (this.selectedCategory) {
+					filteredProducts = filteredProducts.filter(product => product.category === this.selectedCategory);
+				}
+				if (this.selectedBrand) {
+					filteredProducts = filteredProducts.filter(product => product.brand === this.selectedBrand);
+				}
+				
 				const startIndex = (this.currentPage - 1) * this.itemsPerPage;
 				const endIndex = startIndex + this.itemsPerPage;
-				return this.products.slice(startIndex, endIndex);
+				return filteredProducts.slice(startIndex, endIndex);
 			},
 			uniqueCategories() {
 				// Extract unique category names from products array
@@ -172,6 +145,10 @@
 				});
 				return Array.from(brandSet);
 			},
+		},
+		watch: {
+			selectedCategory: 'resetCurrentPage',
+			selectedBrand: 'resetCurrentPage',
 		},
 		methods: { 
 			async getCategory() { 
@@ -214,20 +191,45 @@
 					console.log(error);
 				}
 			},
+			sortProducts() {
+				// Clone the products array to avoid mutating the original data
+				let sortedProducts = [...this.products];
+
+				switch (this.selectedSortOption) {
+				case 'name-asc':
+					sortedProducts.sort((a, b) => a.title.localeCompare(b.title));
+					break;
+				case 'name-desc':
+					sortedProducts.sort((a, b) => b.title.localeCompare(a.title));
+					break;
+				case 'price-asc':
+					sortedProducts.sort((a, b) => a.price - b.price);
+					break;
+				case 'price-desc':
+					sortedProducts.sort((a, b) => b.price - a.price);
+					break;
+				default:
+					break;
+				}
+				// Set the sorted products as the new products
+				this.products = sortedProducts
+			},
 			handlePageChange(newPage) {
 				this.currentPage = newPage;
 			},
-			toggleDropdown() {
-				this.showDropdown = !this.showDropdown;
+			toggleDropdownBrand() {
+				this.showDropdownBrand = !this.showDropdownBrand;
+			},
+			toggleDropdownCategory() {
+				this.showDropdownCategory = !this.showDropdownCategory;
 			},
 			selectCategory(category) {
 				this.selectedCategory = category;
-				this.showDropdown = false; // Close the dropdown after selecting a category
-				// Perform actions based on the selected category if needed
+				// this.showDropdownCategory = false;
 			},
 			selectBrand(brand) {
 				this.selectedBrand = brand;
-				this.showDropdown = false;
+				// this.showDropdownBrand = false;
 			},
 			unselectCategory() {
 				this.selectedCategory = '';
@@ -238,12 +240,16 @@
 			unselectAll() {
 				this.unselectCategory();
 				this.unselectBrand();
-			}
+			},
+			resetCurrentPage() {
+				this.currentPage = 1;
+			},
 		},
 		created() {
 			// Call getCategory when the component is created
 			this.getCategory();
 			this.getCategoryGraphQL();
+			// Create a copy of the original unsorted products
 		},
 	}
 </script>
@@ -311,16 +317,16 @@ content {
   background-color: #f9f9f9;
 }
 
-/* .dropdown-content {
-  position: absolute;
-  z-index: 1;
-  background-color: white;
-  border: 1px solid #ccc;
-  width: 100%;
+.dropdown-content {
+  /* position: absolute; */
+  /* z-index: 1; */
+  /* background-color: white; */
+  /* border: 1px solid #ccc; */
+  /* width: 100%; */
   max-height: 200px;
   overflow-y: auto;
-  display: none;
-} */
+  /* display: none; */
+}
 
 .dropdown-content p {
   padding: 8px 12px;
@@ -331,6 +337,12 @@ content {
 
 .dropdown-content p:hover {
   background-color: #f0f0f0;
+}
+
+.product-header {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 20px 0 20px;
 }
 
 .product-content {
