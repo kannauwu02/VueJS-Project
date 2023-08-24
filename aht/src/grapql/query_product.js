@@ -2,13 +2,11 @@ import gql from "graphql-tag";
 
 export const GET_PRODUCT = gql`
   query {
-    products(
+    product: products(
       filter: { sku: { eq: "laptop-1" } }
-      pageSize: 20
+      pageSize: 1
       currentPage: 1
-      sort: {}
     ) {
-      total_count
       items {
         name
         sku
@@ -20,7 +18,22 @@ export const GET_PRODUCT = gql`
             }
           }
         }
+        media_gallery {
+          url
+        }
+        review_count
+        rating_summary
+        reviews {
+          items {
+            average_rating
+            summary
+            text
+            created_at
+            nickname
+          }
+        }
       }
+      total_count
     }
   }
 `;
