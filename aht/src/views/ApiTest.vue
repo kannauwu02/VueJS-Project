@@ -1,16 +1,20 @@
 <template>
     <div v-for="category in categories.items" :key="category.id">
-		<h2>{{ category.name }} ({{ category.products.total_count }})</h2>
+		<router-link :to="{ name: 'CategoryPage', params: { name: category.name } }">
+			<h2>{{ category.name }}</h2>
+		</router-link>
 	</div>
 	<button @click="doSomethingWithNames">Do Something with Names</button>
 </template>
 <script>
-import { GET_CATEGORIES } from '@/grapql/query_category';
+
+import { GET_ALL_CATEGORIES } from '@/grapql/query_category';
 export default {
 	name: "CategoryPage",
 	apollo: {
 		categories: {
-			query: GET_CATEGORIES,
+			query: GET_ALL_CATEGORIES,
+			
 		},
 	},
 	methods: {

@@ -24,3 +24,20 @@ export const GET_PRODUCT = gql`
     }
   }
 `;
+
+export const GET_PRODUCT_FILTER = gql`
+query{
+  products(filter: { category_id: { eq: "2" } }) {
+    total_count
+    aggregations{
+      attribute_code
+      label
+      count
+      options{
+        count
+        label
+        value
+      }
+    }
+  }
+}`;
