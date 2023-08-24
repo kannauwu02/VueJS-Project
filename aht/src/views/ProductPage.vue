@@ -29,10 +29,14 @@
           </div>
           <div class="product_information">
             <span class="rating">
-              <svg class="star" v-for="starIndex in 5" :key="starIndex" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path :style="'fill: ' + (starIndex <= rating ? 'orange' : '#F1F0E8') + ';'" d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg>
+              <svg class="star" v-for="starIndex in 5" :key="starIndex" xmlns="http://www.w3.org/2000/svg" width="16"
+                height="16" viewBox="0 0 24 24">
+                <path :style="'fill: ' + (starIndex <= rating ? 'orange' : '#F1F0E8') + ';'"
+                  d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" />
+              </svg>
               <a class="reviews" href="">Reviews</a>
             </span>
-            <h1 class="product_name">{{ product.title }}</h1>
+            <h1 class="product_name">{{ product.name }}</h1>
             <span class="price">${{ product.price }}</span>
             <div class="variants">
               <div class="colour">
@@ -76,13 +80,12 @@
   </div>
 </template>
 <script>
-// import axios from "axios"
-
+import { useRoute } from 'vue-router';
+import { GET_PRODUCT } from '@/grapql/query_product';
 export default {
   name: "ProductPage",
   data() {
     return {
-      product: null,
       currentImage: 0,
       quantity: 1,
       text_button: '',
@@ -94,50 +97,55 @@ export default {
       this.updateButton(quantity)
     }
   },
-  async created() {
-    
-    try {
-      const endpoint = await fetch("https://dummyjson.com/products")
-      const response = await endpoint.json()
-      this.product = response.products[0]
-      this.updateButton(this.quantity)
-      this.updateStar(this.product.rating)
-    } catch (error) {
-      console.error('Error fetching products:', error)
-    }
+  apollo: {
+    products: {
+      query: GET_PRODUCT,
+      variables() {
+        const route = useRoute();
+        return {
+          sku: route.params.sku, // Use the SKU parameter from the route
+        };
+      },
+      result(result) {
+        if (!result.loading && !result.error) {
+          // Check if the query has finished loading and has no errors
+          console.log(result.data.products); // Access the query result here
+        }
+      },
+    },
   },
   methods: {
-    Change(index) {
-      this.currentImage = index
-      this.product.images[index]
-    },
-    changeImage(step) {
-      const newIndex = this.currentImage + step;
-      if (newIndex >= 0 && newIndex < this.product.images.length) {
-        this.currentImage = newIndex;
-      }
-    },
-    changeQuantity(step) {
-      const quanti = this.quantity + step
-      this.quantity = quanti;
-    },
-    checkQuanti(event) {
-      const inputValue = event.target.value;
-      this.quantity = parseInt(inputValue, 10);
-    },
-    updateButton(quantity) {
-      if (quantity > this.product.stock) {
-        this.text_button = 'Sold out'
-      } else {
-        this.text_button = 'Add to card'
-      }
-    },
-    addCart() {
-      console.log(this.quantity)
-    },
-    updateStar(rating) {
-      this.rating = parseInt(rating, 10)
-    }
+    // Change(index) {
+    //   this.currentImage = index
+    //   this.product.images[index]
+    // },
+    // changeImage(step) {
+    //   const newIndex = this.currentImage + step;
+    //   if (newIndex >= 0 && newIndex < this.product.images.length) {
+    //     this.currentImage = newIndex;
+    //   }
+    // },
+    // changeQuantity(step) {
+    //   const quanti = this.quantity + step
+    //   this.quantity = quanti;
+    // },
+    // checkQuanti(event) {
+    //   const inputValue = event.target.value;
+    //   this.quantity = parseInt(inputValue, 10);
+    // },
+    // updateButton(quantity) {
+    //   if (quantity > this.product.stock) {
+    //     this.text_button = 'Sold out'
+    //   } else {
+    //     this.text_button = 'Add to card'
+    //   }
+    // },
+    // addCart() {
+    //   console.log(this.quantity)
+    // },
+    // updateStar(rating) {
+    //   this.rating = parseInt(rating, 10)
+    // }
   }
 }
 </script>
@@ -280,6 +288,7 @@ input[type=number] {
   border-radius: 4px;
   background-color: #F1F0E8;
 }
+
 select {
   width: 100%;
 }
@@ -347,4 +356,5 @@ select {
   background-color: transparent;
   border: none;
   font-size: 30px;
-}</style>
+}
+</style>
