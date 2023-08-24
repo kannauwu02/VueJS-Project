@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
 import { GET_PRODUCT } from '@/grapql/query_product';
 import ProductInfor from '@/components/Product_infor.vue';
 
@@ -24,8 +25,20 @@ export default {
     ProductInfor,
   },
   apollo: {
-    product: {
+    products: {
       query: GET_PRODUCT,
+      variables() {
+        const route = useRoute();
+        return {
+          sku: route.params.sku, // Use the SKU parameter from the route
+        };
+      },
+      result(result) {
+        if (!result.loading && !result.error) {
+          // Check if the query has finished loading and has no errors
+          console.log(result.data.products); // Access the query result here
+        }
+      },
     },
   }
 }

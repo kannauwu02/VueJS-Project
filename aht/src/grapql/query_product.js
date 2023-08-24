@@ -1,11 +1,10 @@
 import gql from "graphql-tag";
 
 export const GET_PRODUCT = gql`
-  query {
+  query GetProduct($sku: String!) {
     product: products(
-      filter: { sku: { eq: "laptop-1" } }
+      filter: { sku: { eq: $sku } }
       pageSize: 1
-      currentPage: 1
     ) {
       items {
         name
