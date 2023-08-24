@@ -1,37 +1,10 @@
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import App from './App.vue'
-import router from "./router/index";
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core';
-import { createApolloProvider } from '@vue/apollo-option';
+import router from './router/index';
+import apolloProvider from '@/graphql/apollo'
 
-// HTTP connection to the API
-const httpLink = createHttpLink({
-    uri: 'https://magentoapi.merket.io/graphql',
-});
+const app = createApp({
+  render: () => h(App),
+})
 
-// Cache implementation
-const cache = new InMemoryCache()
-
-// Create the apollo client
-const apolloClient = new ApolloClient({
-  link: httpLink,
-  cache: cache,
-  headers: {
-    "Accept": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Authorization, Content-Type",
-    "Content-Type": "application/json; charset=UTF-8"
-  },
-});
-
-const apolloProvider = createApolloProvider({
-  defaultClient: apolloClient,
-});
-
-const app = createApp(App);
-
-app.use(router);
-
-app.use(apolloProvider);
-
-app.mount('#app');
+app.use(apolloProvider).use(router).mount('#app')

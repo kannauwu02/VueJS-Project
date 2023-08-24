@@ -6,6 +6,29 @@ export const GET_CATEGORIES = gql`
       items {
         id
         name
+        products {
+          items {
+            id
+            name
+            thumbnail {
+              url
+            }
+            price_range {
+              minimum_price {
+                regular_price {
+                  value
+                  currency
+                }
+              }
+            }
+            
+          }
+          total_count
+          page_info {
+          current_page
+          page_size
+          }
+        }
       }
     }
   }

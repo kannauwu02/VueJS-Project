@@ -65,10 +65,13 @@
 			</div>
 		</div>
 		<div class="product-content">
-			<div class="product-container" v-for="product in displayedProducts" :key="product.id">
-				<img :src="product.thumbnail" alt="Product Thumbnail">
-				<p class="product-name">{{ product.title }}</p>
-				<p class="product-price">{{ product.price }}$</p>
+			<div class="product-category" v-for="category in categories.items" :key="category.id">
+				<h2>{{ category.name }} ({{ category.products.total_count }})</h2>
+				<div class="product-container" v-for="product in category.products.items" :key="product.id">
+					<img :src="product.thumbnail.url" alt="Product Thumbnail">
+					<p class="product-name">{{ product.name }}</p>
+					<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
+				</div>
 			</div>
 			<p v-if="displayedProducts.length === 0">No products match the filter.</p>
 		</div>
@@ -326,6 +329,10 @@ content {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: left;
+}
+
+.product-category {
+	display: flex;
 }
 
 .product-container {
