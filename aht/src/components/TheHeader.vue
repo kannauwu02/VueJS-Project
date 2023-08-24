@@ -1,32 +1,40 @@
 <template>
-  <div v-if="$apollo.queries.headerTop.loading">Loading...</div>
-  <div class="header-desktop">
-    <div class="header-top-bar-wrapper desktop-item" v-for="item in headerTop.items" :key="item">
-      <div v-html="item.content"></div>
+  <header>
+    <div v-if="$apollo.queries.headerTop.loading">Loading...</div>
+    <div class="header-desktop">
+      <div class="header-top-bar-wrapper desktop-item" v-for="item in headerTop.items" :key="item">
+        <div v-html="item.content"></div>
+      </div>
     </div>
-  </div>
-  <div class="header-mobile">
-    <div class="header-top-bar-wrapper mobile-item" v-for="item in headerTop.items" :key="item">
-      <div v-html="item.content"></div>
-    </div>
-    <div class="header-items">
-      <div class="menu">
-        <MenuSlideout />
+    <div class="header-mobile">
+      <div class="header-top-bar-wrapper mobile-item" v-for="item in headerTop.items" :key="item">
+        <div v-html="item.content"></div>
       </div>
-      <div class="phone">
-        <img src="../assets/phone-icon@1x.svg" alt="">
-      </div>
-      <div class="logo">
-        <img :src="config.base_media_url + 'logo/' + config.header_logo_src" alt="">
-      </div>
-      <div class="search">
-        <div class="icon">
+      <div class="header-items">
+        <div class="menu">
+          <MenuSlideout />
+        </div>
+        <div class="phone">
+          <img src="../assets/phone-icon@1x.svg" alt="">
+        </div>
+        <div class="logo">
+          <img :src="config.base_media_url + 'logo/' + config.header_logo_src" alt="">
+        </div>
+        <div class="search">
+          <div class="icon">
+            <img src="../assets/search_icon_2x.png" alt="">
+          </div>
+        </div>
+        <div class="mini-cart">
+          <div class="icon">
+            <img src="../assets/cart_icon.png" alt="">
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </header>
 </template>
-  
+
 <script>
   import gql from 'graphql-tag'
   import MenuSlideout from "@/components/MenuSlideout.vue"
@@ -89,6 +97,11 @@ body #app {
   margin: 0;
 }
 
+header {
+  position: relative;
+  overflow-x: hidden;
+}
+
 .header-items {
   background: #333;
   display: flex;
@@ -97,6 +110,7 @@ body #app {
 .logo img {
   height: 36px;
   width: auto;
+  margin: 0 auto;
 }
 
 .desktop-item,
@@ -168,6 +182,36 @@ img {
   background-image: url('../assets/arrow_right_icon.png');
 }
 
+.header-items {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+}
+
+.header-items img {
+  display: block;
+}
+
+.header-items .logo {
+  flex-grow: 1;
+}
+
+.header-items .menu {
+  margin-right: 21px;
+  width: 18px;
+}
+
+.header-items .mini-cart img {
+  margin-left: 22px;
+  max-height: 19px;
+  width: auto;
+}
+
+.header-items .search img,
+.header-items .phone img {
+  max-height: 20px;
+  width: auto;
+}
 
 @media only screen and (min-width: 768px) {
   img.pagebuilder-mobile-hidden {
