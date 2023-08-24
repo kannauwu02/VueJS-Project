@@ -19,7 +19,7 @@ const router = createRouter({
       component: CategoryPage,
     },
     {
-      path: "/ProductPage",
+      path: "/product/:sku",
       name: "ProductPage",
       component: ProductPage,
     },

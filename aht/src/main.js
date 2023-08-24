@@ -1,7 +1,7 @@
 import { createApp, h } from 'vue'
 import App from './App.vue'
 import router from './router/index';
-import apolloProvider from '@/graphql/apollo'
+import apolloProvider from '@/grapql/apollo'
 
 const app = createApp({
   render: () => h(App),

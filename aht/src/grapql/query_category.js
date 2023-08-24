@@ -9,6 +9,7 @@ export const GET_CATEGORIES = gql`
         products {
           items {
             id
+            sku
             name
             thumbnail {
               url

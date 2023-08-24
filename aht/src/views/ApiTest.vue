@@ -5,7 +5,7 @@
 	<button @click="doSomethingWithNames">Do Something with Names</button>
 </template>
 <script>
-import { GET_CATEGORIES } from '@/graphql/queries';
+import { GET_CATEGORIES } from '@/grapql/query_category';
 export default {
 	name: "CategoryPage",
 	apollo: {
