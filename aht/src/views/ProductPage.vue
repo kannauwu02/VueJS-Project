@@ -25,19 +25,13 @@ export default {
     ProductInfor,
   },
   apollo: {
-    products: {
+    product: {
       query: GET_PRODUCT,
       variables() {
         const route = useRoute();
         return {
-          sku: route.params.sku, // Use the SKU parameter from the route
+          sku: route.params.sku,
         };
-      },
-      result(result) {
-        if (!result.loading && !result.error) {
-          // Check if the query has finished loading and has no errors
-          console.log(result.data.products); // Access the query result here
-        }
       },
     },
   }

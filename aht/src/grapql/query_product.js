@@ -2,10 +2,7 @@ import gql from "graphql-tag";
 
 export const GET_PRODUCT = gql`
   query GetProduct($sku: String!) {
-    product: products(
-      filter: { sku: { eq: $sku } }
-      pageSize: 1
-    ) {
+    product: products(filter: { sku: { eq: $sku } }, pageSize: 1) {
       items {
         name
         sku
@@ -29,6 +26,47 @@ export const GET_PRODUCT = gql`
             text
             created_at
             nickname
+          }
+        }
+        ... on ConfigurableProduct {
+          configurable_options {
+            uid
+            attribute_uid
+            label
+            position
+            use_default
+            attribute_code
+            values {
+              uid
+              label
+              swatch_data {
+                value
+              }
+            }
+            product_id
+          }
+          variants {
+            product {
+              uid
+              name
+              sku
+              ... on PhysicalProductInterface {
+                weight
+              }
+              price_range {
+                minimum_price {
+                  regular_price {
+                    value
+                    currency
+                  }
+                }
+              }
+            }
+            attributes {
+              label
+              code
+              value_index
+            }
           }
         }
       }

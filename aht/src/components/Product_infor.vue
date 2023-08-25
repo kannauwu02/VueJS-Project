@@ -35,43 +35,76 @@
                             <path :style="'fill: ' + (starIndex <= rating ? 'orange' : '#F1F0E8') + ';'"
                                 d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z" />
                         </svg>
-                        <a class="reviews" href="">{{ product.review_count }}Reviews</a>
+                        <a class="reviews" href="">{{ product.review_count }} Reviews</a>
                     </span>
                     <h1 class="product_name">{{ product.name }}</h1>
-                    <span class="price">${{ product.price }}</span>
-                    <!-- <div class="variants">
-                        <div class="colour">
-                            <label for="colour">Colour</label> <br>
-                            <select name="colour" id="colour" class="seclect_opt">
-                                <option value="red">red</option>
-                                <option value="black">black</option>
-                                <option value="white">white</option>
+                    <span class="price">{{ formatCurrency(this.product.price_range.minimum_price.regular_price.value)
+                    }}</span>
+                    <div class="variants">
+                        <div class="opt_variant" v-for="(opt, index) in product.configurable_options" :key="index">
+                            {{ opt.value }}
+                            <label :for="opt.label">{{ opt.label }}</label> <br>
+                            <select :name="opt.label" :id="opt.label" class="seclect_opt" v-model="selectedOptions[index]">
+                                <option v-for="(item, index) in opt.values" :key="index" :value="item.label">{{ item.label
+                                }}
+                                </option>
                             </select>
                         </div>
-                        <div class="size">
-                            <label for="size">Size</label> <br>
-                            <select name="size" id="size" class="seclect_opt">
-                                <option value="red">red</option>
-                                <option value="black">black</option>
-                                <option value="white">white</option>
-                            </select>
-                        </div>
-                    </div> -->
-                    <!-- <div class="add_cart">
+                    </div>
+                    <div class="add_cart">
                         <div class="quantity">
-                            <button class="minus" @click="changeQuantity(-1)" :disabled="quantity === 1">-</button>
-                            <input type="number" min="1" :value="quantity" @input="checkQuanti">
-                            <button class="add" @click="changeQuantity(1)">+</button>
+                            <button class="minus" @click="changeQuantity(-1)" :disabled="quantity === 1"><svg
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    width="10px" height="2px" viewBox="0 0 10 2" version="1.1">
+                                    <g id="Desktop" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <g id="shoppingbag_v01" transform="translate(-697.000000, -480.000000)"
+                                            fill="#CCCCCC">
+                                            <g id="Block-/-Cart-/-Product-Copy"
+                                                transform="translate(180.000000, 431.000000)">
+                                                <g id="Field-/-Quantity-Elements-/-Quantity"
+                                                    transform="translate(498.000000, 30.000000)">
+                                                    <g id="Field-/-Quantity">
+                                                        <g id="icon-/-solid-/-interface-/-minus-1-icon-/-solid-/-interface-/-minus-2"
+                                                            transform="translate(14.000000, 10.000000)">
+                                                            <g id="icon-/-solid-/-interface-/-minus-5632"
+                                                                transform="translate(5.000000, 9.166667)">
+                                                                <polygon id="Path"
+                                                                    points="0 0 10 0 10 1.66666667 0 1.66666667" />
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg></button>
+                            <input type="number" min="1" v-model="quantity">
+                            <button class="add" @click="changeQuantity(1)"><svg xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="10px" height="10px"
+                                    viewBox="0 0 12 12" version="1.1">
+                                    <g id="Desktop" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <g id="category_v01" transform="translate(-396.000000, -718.000000)" fill="#9B9B9B"
+                                            fill-rule="nonzero">
+                                            <g id="Sidebar" transform="translate(180.000000, 351.000000)">
+                                                <g transform="translate(0.000000, 172.000000)" id="Other">
+                                                    <g transform="translate(1.000000, 175.000000)">
+                                                        <g id="Clubs">
+                                                            <polygon id="plus"
+                                                                points="222 25 227 25 227 27 222 27 222 32 220 32 220 27 215 27 215 25 220 25 220 20 222 20" />
+                                                        </g>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg></button>
                         </div>
                         <button class="add_to-cart" @click="addCart" :disabled="quantity > product.stock">{{ text_button
                         }}</button>
                     </div>
                     <div class="why_choose">
-                        <div class="condition_item">Best price guaranteed</div>
-                        <div class="condition_item">Best price guaranteed</div>
-                        <div class="condition_item">Best price guaranteed</div>
-                        <div class="condition_item">Best price guaranteed</div>
-                    </div> -->
+                        <CmsBlock :block="blockIdentifier" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -79,6 +112,7 @@
 </template>
   
 <script>
+import CmsBlock from './Block.vue';
 export default {
     name: "ProductInfor",
     data() {
@@ -86,19 +120,39 @@ export default {
             currentImage: 0,
             rating: 0,
             reviewCount: 0,
-            priceWithCurrency:''
+            quantity: 1,
+            priceWithCurrency: '',
+            selectedOptions: [],
+            productAddCart: {},
+            blockIdentifier: {
+                content: "why-choose"
+            }
         };
     },
     watch: {
-        currentImage: 'currentImage'
+        quantity: {
+            handler(newQuantity) {
+                this.updateButton(newQuantity);
+            },
+            deep: true
+        },
+        selectedOptions: {
+            handler(newSelectedOptions) {
+                this.getProduct(newSelectedOptions, this.quantity);
+            },
+            deep: true
+        }
+    },
+    components: {
+        CmsBlock,
     },
     props: {
         product: {}
     },
     created() {
         this.rating = this.product.rating_summary / 20
-        this.priceWithCurrency = this.product.price_range.minimum_price.regular_price.currency + this.product.price_range.minimum_price.regular_price.value
-        console.log(this.priceWithCurrency)
+        this.updateButton(this.quantity)
+        this.selectedOptions = this.product.configurable_options.map(opt => opt.values[0].label);
     },
     methods: {
         Change(index) {
@@ -109,62 +163,130 @@ export default {
             if (newIndex >= 0 && newIndex < this.product.media_gallery.length) {
                 this.currentImage = newIndex;
             }
-            console.log(this.currentImage)
+        },
+        formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: this.product.price_range.minimum_price.regular_price.currency,
+            }).format(value);
+        },
+        changeQuantity(step) {
+            const quanti = this.quantity + step
+            this.quantity = quanti;
+        },
+        updateButton(quantity) {
+            if (quantity > this.product.stock) {
+                this.text_button = 'Sold out'
+            } else {
+                this.text_button = 'Add to card'
+            }
+        },
+        getProduct(selectedOptions, quantity) {
+            let matchProduct = null
+            this.product.variants.map((item) => {
+                const attProduct = item.attributes
+                const isMatch = Object.values(selectedOptions).every((value, index) => {
+                    return attProduct[index].label === value;
+                });
+
+                if (isMatch) {
+                    matchProduct = item.product
+                }
+            })
+            this.productAddCart = {
+                matchProduct,
+                quantity
+            }
+        },
+        addCart() {
+            console.log(this.productAddCart)
         },
     },
 };
 </script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Oswald:wght@400;600;700&display=swap');
+
 .container {
-    margin: 0 80px;
+    margin: 0 auto;
+    max-width: 1280px;
+    padding: 0 20px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.opt_variant label {
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 600;
+    font-family: 'Oswald', sans-serif;
+}
+
+.opt_variant select {
+    font-family: 'Montserrat', sans-serif;
 }
 
 .seclect_opt {
-    height: 48px;
-    border-color: #e4e1e1;
-    border-radius: 4px;
+    margin-top: 4px;
+    height: 50px;
+    border-color: #E4E4E4;
+    border-radius: 3px;
+    padding-left: 18px;
+    font-size: 14px;
+    color: #4A4A4A;
 }
 
 .reviews {
+    line-height: 24px;
     padding-left: 4px;
     text-transform: capitalize;
     text-decoration: underline;
-    font-size: 14px;
+    font-size: 12px;
     color: grey;
 }
 
 .star {
-    padding: 0 4px;
+    padding: 0 2px;
 }
 
 .group {
-    box-shadow: 0 0 50px rgb(180, 179, 179);
-    padding: 24px;
+    box-shadow: 8px 8px 40px 10px rgba(0,0,0,.08);
+    padding: 24px 32px 24px 24px;
 }
 
 .product_name {
+    font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
     margin-top: 0;
+    line-height: 28px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 
 .price {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 600;
     display: block;
-    padding-bottom: 24px;
-    border-bottom: 1px solid #e4e1e1;
+    padding-bottom: 20px;
+    line-height: 34px;
+    border-bottom: 1px solid #E4E4E4;
 }
 
 .quantity {
     border: 1px solid #e4e1e1;
-    border-radius: 4px;
+    display: flex;
+    border-radius: 3px;
+    width: 108px;
+    overflow: hidden;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .quantity button {
-    height: 100%;
-    width: 48px;
+    display: flex;
     padding: 0;
+    min-width: 34px;
+    justify-content: center;
 }
 
 .right {
@@ -175,11 +297,13 @@ export default {
     padding: 0;
     flex-basis: 0;
     flex-grow: 1;
-    border-radius: 4px;
-    background-color: #7DCE13;
+    border-radius: 3px;
+    background-color: #8AD038;
     border: none;
+    font-family: 'Montserrat', sans-serif;
+    line-height: 13px;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
     color: white;
 }
 
@@ -189,8 +313,8 @@ export default {
 
 .variants {
     display: flex;
-    margin-top: 24px;
-    gap: 16px;
+    margin-top: 20px;
+    gap: 18px;
     margin-bottom: 16px;
 }
 
@@ -214,19 +338,20 @@ export default {
 
 .add_cart {
     display: flex;
-    height: 48px;
+    height: 50px;
     gap: 16px;
 }
 
 .product_information {
     text-align: left;
-    margin-left: 24px;
+    margin-left: 38px;
     width: 50%;
 }
 
 .rating {
-    padding-bottom: 6px;
-    display: inline-block;
+    padding-bottom: 4px;
+    display: flex;
+    align-items: center;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
@@ -236,22 +361,21 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 input[type=number] {
-    max-width: 48px;
+    width: 100%;
     border-radius: unset;
     border: none;
     text-align: center;
     padding: 0;
     height: 100%;
+    font-family: 'Montserrat', sans-serif;
     -moz-appearance: textfield;
 }
 
 .why_choose {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
     margin-top: 16px;
     padding: 24px 24px;
-    border-radius: 4px;
-    background-color: #F1F0E8;
+    border-radius: 5px;
+    background-color: #F4F4F4;
 }
 
 select {
@@ -272,8 +396,8 @@ select {
 
 .image_item {
     box-sizing: border-box;
-    width: 80px;
-    height: 80px;
+    width: 64px;
+    height: 64px;
     margin-bottom: 16px;
 }
 
@@ -321,6 +445,59 @@ select {
     background-color: transparent;
     border: none;
     font-size: 30px;
+}
+
+.pagebuilder-column-line .pagebuilder-column:first-child {
+    margin-bottom: 16px;
+}
+
+.pagebuilder-column {
+    display: flex;
+    align-items: center;
+}
+
+@media only screen and (min-width: 1024px) {
+    .pagebuilder-column-line {
+        display: flex;
+    }
+
+    .pagebuilder-column-line .pagebuilder-column:first-child {
+        margin-bottom: 0;
+    }
+
+    .pagebuilder-column {
+        width: 50%;
+    }
+}
+
+.pagebuilder-mobile-hidden {
+    display: none;
+}
+
+.pagebuilder-column-group {
+    margin-bottom: 16px;
+}
+
+.pagebuilder-column figure {
+    margin: 0;
+    height: 24px;
+    min-width: 42px;
+}
+
+.pagebuilder-column figure img {
+    height: 100%;
+}
+
+.pagebuilder-column p {
+    font-size: 13px;
+    line-height: 30px;
+    font-weight: 600;
+    color: #8C9199;
+    margin: 0;
+}
+
+.pagebuilder-column .car-icon {
+    height: 18px;
 }
 </style>
   
