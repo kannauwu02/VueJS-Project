@@ -28,46 +28,47 @@
 </template>
   
 <script>
-  import gql from 'graphql-tag'
-  import MenuSlideout from "@/components/MenuSlideout.vue"
+import gql from 'graphql-tag'
+import MenuSlideout from "@/components/MenuSlideout.vue"
 
-  const $ = window.$
+const $ = window.$
 
-  export default {
-    name: "TheHeader",
-    components: {
-      MenuSlideout
-    },
-    data() {
-      return {
-        config: '',
-        headerTop: '',
-        hedaerContact: ''
-      };
-    },
-    apollo: {
-      config: gql`query {
+export default {
+  name: "TheHeader",
+  components: {
+    MenuSlideout
+  },
+  data() {
+    return {
+      config: '',
+      headerTop: '',
+      hedaerContact: ''
+    };
+  },
+  apollo: {
+    config: gql`query {
         config: storeConfig {
           base_media_url,
           header_logo_src
         },
       }`,
-      headerTop: gql`query {
+    headerTop: gql`query {
         headerTop: cmsBlocks(identifiers: ["header-top-bar"]) {
           items {
             content
           }
         },
       }`,
-      headerContact: gql`query {
+    headerContact: gql`query {
         headerContact: cmsBlocks(identifiers: ["header-contact"]) {
           items {
             content
           }
         },
       }`,
-    },
-    updated: function () {
+  },
+  updated: function () {
+    if (!document.querySelector('.header-top-bar-wrapper.mobile-item .slick-slider')) {
       $('.header-top-bar-wrapper.mobile-item .pagebuilder-column-line').slick({
         dots: false,
         infinite: true,
@@ -75,8 +76,10 @@
         slidesToShow: 1,
         slidesToScroll: 1,
       });
+
     }
   }
+}
 </script>
 
 <style>

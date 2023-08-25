@@ -249,7 +249,7 @@ export default {
 }
 
 .group {
-    box-shadow: 8px 8px 40px 10px rgba(0,0,0,.08);
+    box-shadow: 8px 8px 40px 10px rgba(0, 0, 0, .08);
     padding: 24px 32px 24px 24px;
 }
 
@@ -478,7 +478,7 @@ select {
     margin-bottom: 16px;
 }
 
-.pagebuilder-column figure {
+.why_choose .pagebuilder-column figure {
     margin: 0;
     height: 24px;
     min-width: 42px;
@@ -486,6 +486,7 @@ select {
 
 .pagebuilder-column figure img {
     height: 100%;
+    object-fit: contain;
 }
 
 .pagebuilder-column p {
@@ -496,7 +497,7 @@ select {
     margin: 0;
 }
 
-.pagebuilder-column .car-icon {
+.why_choose .pagebuilder-column .car-icon {
     height: 18px;
 }
 </style>
