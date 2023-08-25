@@ -1,13 +1,14 @@
 <template>
-    <p>{{ msg }}</p>
-    <p v-html="home.content"></p>
-    <p>{{ ping }}</p>
+    
     <div>
         <router-link to="/">HomePage</router-link>
         <router-link to="/category/:name">CategoryPage</router-link>
         <router-link to="/ProductPage">ProductPage</router-link>
         <router-link to="/ApiTest">ApiTest</router-link>
     </div>
+    <p>{{ msg }}</p>
+    <p v-html="home.content"></p>
+    <p>{{ ping }}</p>
 </template>
 <script>
   import gql from 'graphql-tag';

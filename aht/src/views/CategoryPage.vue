@@ -1,95 +1,93 @@
 <template>
-<content>
-	<h2 class="category-title">{{ categories.items[0].name }} ({{ categories.items[0].products.total_count }})</h2>
-	<div class="sidebar">
-		<div class="filtered-box">
-			<h2 class="heading">Filtered by</h2>
-			<!-- add filter here -->
-			<!-- <div v-if="selectedCategory" class="filtered-category">
-				<p>Types: {{ selectedCategory }}</p>
-				<button class="remove-filter" @click="unselectCategory">X</button>
+<div v-if="categories && products">
+	<content>
+		<h2 class="category-title">{{ categories.items[0].name }} ({{ products.total_count }})</h2>
+		<div class="sidebar">
+			<div class="filtered-box">
+				<h2 class="heading">Filtered by</h2>
+				<!-- add filter here -->
+				
+				<p class="clear-button">Clear all</p>
 			</div>
-			<div v-if="selectedBrand" class="filtered-category">
-				<p>Brand: {{ selectedBrand }}</p>
-				<button class="remove-filter" @click="unselectBrand">X</button>
-			</div> -->
-			<p class="clear-button">Clear all</p>
-		</div>
-		<div class="category-box">
-			<div class="types">
-				<h2 class="heading">Types</h2>
-				<!-- add types here -->
-				<!-- <div class="dropdown">
-					<button class="dropdown-button" @click="toggleDropdownCategory">Select a category</button>
-					<div class="dropdown-content" v-show="showDropdownCategory">
-						<p v-for="(category, index) in uniqueCategories" :key="index" @click="selectCategory(category)">{{ category }}</p>
-					</div>
-				</div> -->
-			</div>
-			<div class="features">
-				<h2 class="heading">Features</h2>
-				<!-- add features here -->
-			</div>
-			<div class="brands">
-				<h2 class="heading">Brands</h2>
-				<!-- add brands here -->
-				<!-- <div class="dropdown">
-					<button class="dropdown-button" @click="toggleDropdownBrand">Select a brand</button>
-					<div class="dropdown-content" v-show="showDropdownBrand">
-						<p v-for="(brand, index) in uniqueBrand" :key="index" @click="selectBrand(brand)">{{ brand }}</p>
-					</div>
-				</div> -->
-			</div>
-			<div class="prices">
-				<h2 class="heading">Price</h2>
-				<!-- add price here -->
-			</div>
-		</div>
-	</div>
-	<div class="product-box">
-		
-		<div class="product-header" v-if="categories.items[0].products.total_count > 0">
-			<div class="product-sort">
-				<label for="sort-select">Sort by:</label>
-				<select id="sort-select" v-model="currentSort" @change="changeSort(currentSort)">
-					<option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-				</select>
-			</div>
-			<div class="paginator">
-				<button @click="previousPage" :disabled="currentPage === 1">Previous</button>
-				<span>{{ currentPage }}</span>
-				<button @click="nextPage(categories.items[0].products.page_info)" :disabled="currentPage === categories.items[0].products.page_info.total_pages">Next</button>
-			</div>
-			<div class="product-show">
-				<label for="show-select">Show:</label>
-				<select id="show-select" v-model="pageSize" @change="changeSize(pageSize)">
-					<option v-for="option in sizeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-				</select>
-				per page.
-			</div>
-		</div>
-		<div class="product-content">
-			<div class="product-category" v-if="categories.items[0]">
-				<div class="product-container" v-for="product in categories.items[0].products.items" :key="product.sku">
-					<router-link :to="{ name: 'ProductPage', params: { sku: product.sku } }" class="router-link">
-						<img :src="product.thumbnail.url" alt="Product Thumbnail">
-						<p class="product-name">{{ product.name }}</p>
-						<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
-					</router-link>
+			<div class="category-box">
+				<div class="types">
+					<h2 class="heading">Types</h2>
+					<!-- add types here -->
+					
 				</div>
-				<p v-if="categories.items[0].products.total_count === 0">No products.</p>
+				<div class="features">
+					<h2 class="heading">Features</h2>
+					<!-- add features here -->
+					<color-filter v-if="colorOptions.length > 0" :options="colorOptions" @updateColorFilter="updateColorFilter" />
+					<size-filter v-if="sizeOptions.length > 0" :options="sizeOptions" @updateSizeFilter="updateSizeFilter" />
+				</div>
+				<div class="brands">
+					<h2 class="heading">Brands</h2>
+					<!-- add brands here -->
+					
+				</div>
+				<div class="prices">
+					<h2 class="heading">Price</h2>
+					<!-- add price here -->
+					<price-filter v-if="priceOptions.length > 0" :options="priceOptions" @updatePriceFilter="updatePriceFilter" />
+				</div>
 			</div>
 		</div>
-	</div>
-</content>
+		<div class="product-box">
+			<div class="product-header" v-if="products.total_count > 0">
+				<div class="product-sort">
+					<label for="sort-select">Sort by:</label>
+					<select id="sort-select" v-model="currentSort" @change="changeSort(currentSort)">
+						<option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+					</select>
+				</div>
+				<div class="paginator">
+					<button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+					<span>{{ currentPage }}</span>
+					<button @click="nextPage(products.page_info)" :disabled="currentPage === products.page_info.total_pages">Next</button>
+				</div>
+				<div class="product-show">
+					<label for="show-select">Show:</label>
+					<select id="show-select" v-model="pageSize" @change="changeSize(pageSize)">
+						<option v-for="option in pageSizeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+					</select>
+					per page.
+				</div>
+			</div>
+			<div class="product-content">
+				<div class="product-category" v-if="products">
+					<div class="product-container" v-for="product in products.items" :key="product.sku">
+						<router-link :to="{ name: 'ProductPage', params: { sku: product.sku } }" class="router-link">
+							<img :src="product.thumbnail.url" alt="Product Thumbnail">
+							<p class="product-name">{{ product.name }}</p>
+							<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
+						</router-link>
+					</div>
+					<p v-if="products.items.total_count === 0">No products.</p>
+				</div>
+			</div>
+		</div>
+	</content>
+</div>
+<div v-else>
+    Loading... <!-- or any other loading indicator you prefer -->
+</div>
 </template>
 <script>
 	import { useRoute } from 'vue-router';
-	// import PaginatorCategory from "@/components/PaginatorCategory.vue";
+	import ColorFilter from "@/components/ColorFilter.vue";
+	import PriceFilter from "@/components/PriceFilter.vue";
+	import SizeFilter from "@/components/SizeFilter.vue";
 	import { GET_CATEGORIES } from '@/grapql/query_category';
+	import { GET_PRODUCT_FILTER } from '@/grapql/query_product';
 
 	export default {
 		name: "CategoryPage",
+		components: {
+			ColorFilter,
+			PriceFilter,
+			SizeFilter,
+		},
 		data() {
 			return {
 				pageSize: 4,
@@ -101,19 +99,23 @@
 					{ label: 'Price Ascending', value: 'price-asc' },
 					{ label: 'Price Descending', value: 'price-desc' },
 				],
-				sizeOptions: [
+				pageSizeOptions: [
 					{ label: 4, value: 4 },
 					{ label: 8, value: 8 },
 					{ label: 12, value: 12 },
 				],
 				currentSort: 'default',
+				colorOptions: [], // Initialize with empty array
+				sizeOptions: [],
+				priceOptions: [],
 			};
 		},
 		apollo: {
-			categories: {
-				query: GET_CATEGORIES,
+			products: {
+				query: GET_PRODUCT_FILTER,
 				variables() {
-					const route = useRoute();
+					// const route = useRoute();
+					const id = localStorage.getItem('categoryId');
 					let sortOption = {};
 					if (this.currentSort === 'name-asc') {
 						sortOption = { name: 'ASC' };
@@ -128,10 +130,27 @@
 					}
 					
 					return {
-						name: route.params.name, // Use the name parameter from the route
+						id: id, // Use the name parameter from the route
 						pageSize: this.pageSize,
 						currentPage: this.currentPage,
 						sort: sortOption
+					};	
+				},
+				result(result) {
+					if (!result.loading && !result.error) {
+						// Check if the query has finished loading and has no errors
+						console.log(result.data.products); // Access the query result here
+					}
+				},
+			},
+			categories: {
+				query: GET_CATEGORIES,
+				variables() {
+					// const route = useRoute();
+					const id = localStorage.getItem('categoryId');
+					
+					return {
+						id: id, // Use the name parameter from the route	
 					};
 				},
 				result(result) {
@@ -141,8 +160,27 @@
 					}
 				},
 			},
+			
 		},
+		
 		methods: {
+			getCategoryId(routeId) {
+				// Check if the route parameter exists in local storage
+				const storedId = localStorage.getItem('categoryId');
+
+				// Use the stored value if available, otherwise use the route parameter
+				return storedId || routeId;
+			},
+			extractAggregationOptions(attributeCode) {
+				// Check if products is defined before extracting aggregations
+				if (this.products) {
+					const aggregation = this.products.aggregations.find(
+						(agg) => agg.attribute_code === attributeCode
+					);
+					return aggregation ? aggregation.options : [];
+				}
+				return [];
+			},
 			// Function to change sorting option
 			changeSort(option) {
 				this.currentSort = option;
@@ -167,6 +205,24 @@
 					this.updatePagination(this.pageSize, this.currentPage + 1);
 				}
 			},
+			
+		},
+		watch: {
+			products: {
+				deep: true,
+				handler(newVal) {
+					if (newVal.aggregations) {
+						this.colorOptions = this.extractAggregationOptions('colour');
+						this.sizeOptions = this.extractAggregationOptions('size');
+						this.priceOptions = this.extractAggregationOptions('price');
+					}
+				},
+			},
+		},
+		created() {
+			const route = useRoute();
+			// Store the route parameter in local storage
+			localStorage.setItem('categoryId', route.params.id);
 		},
 	}
 </script>
