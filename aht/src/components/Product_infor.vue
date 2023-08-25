@@ -3,29 +3,10 @@
         <div class="group">
             <div class="product">
                 <div class="product_image">
-                    <div class="list_image">
-                        <div class="image_item" :class="{ selected: index === currentImage }"
-                            v-for="(image, index) in product.media_gallery" :key="index" @click="Change(index)">
+                    <div class="list_image slick-slider">
+                        <div class="image_item" v-for="(image, index) in product.media_gallery" :key="index">
                             <img :src="image.url" alt="" srcset="">
                         </div>
-                    </div>
-                    <div class="image_current">
-                        <button class="prev left button_slide" @click="changeImage(-1)" :disabled="currentImage === 0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                                <path d="M20 26L10 16L20 6" stroke="#426686" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </button>
-                        <div class="skeleton_image">
-                            <img :src="product.media_gallery[currentImage].url" alt="">
-                        </div>
-                        <button class="next right button_slide" @click="changeImage(1)"
-                            :disabled="currentImage === product.media_gallery.length - 1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                                <path d="M12 6L22 16L12 26" stroke="#426686" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
                 <div class="product_information">
@@ -113,11 +94,11 @@
   
 <script>
 import CmsBlock from './Block.vue';
+const $ = window.$
 export default {
     name: "ProductInfor",
     data() {
         return {
-            currentImage: 0,
             rating: 0,
             reviewCount: 0,
             quantity: 1,
@@ -142,6 +123,20 @@ export default {
             },
             deep: true
         }
+    },
+    mounted() {
+        $('.list_image.slick-slider').slick({
+            dots: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+        });
+        const listDots = document.querySelectorAll('.list_image .slick-dots li')
+        listDots.forEach((item, index) => {
+            const dotHTML = '<button style="background-image: url(' + this.product.media_gallery[index].url + ');"></button>';
+            item.innerHTML = dotHTML
+        })
     },
     components: {
         CmsBlock,
@@ -206,6 +201,64 @@ export default {
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Oswald:wght@400;600;700&display=swap');
+
+.list_image {
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.list_image .slick-list {
+    flex-basis: 0;
+    flex-grow: 1;
+    margin-left: 24px;
+    position: relative;
+    height: 0;
+    padding-bottom: calc(100% - 88px);
+}
+
+.list_image .slick-list .slick-track {
+    position: absolute;
+    height: 100%;
+    top: 0;
+}   
+
+.slick-dots {
+    position: unset;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+
+}
+
+.product_image .list_image.slick-slider {
+    margin-bottom: 0;
+}
+
+.list_image .slick-dots li {
+    position: unset;
+    width: fit-content;
+    height: fit-content;
+    margin: 0;
+    margin-bottom: 16px;
+}
+
+.list_image .slick-dots li:last-child {
+    margin-bottom: 0;
+}
+
+.list_image .slick-dots li button:before {
+    content: unset;
+}
+
+.list_image .slick-dots li button {
+    padding: 0;
+    min-width: 64px;
+    min-height: 64px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
 
 .container {
     margin: 0 auto;
@@ -392,13 +445,6 @@ select {
     border: none;
     border-radius: unset;
     background-color: transparent;
-}
-
-.image_item {
-    box-sizing: border-box;
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
 }
 
 .skeleton_image {
