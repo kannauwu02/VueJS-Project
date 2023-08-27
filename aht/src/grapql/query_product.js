@@ -14,6 +14,23 @@ export const GET_PRODUCT = gql`
             }
           }
         }
+        related_products {
+          uid
+          name
+          sku
+          url_key
+          price_range {
+            minimum_price {
+              regular_price {
+                value
+                currency
+              }
+            }
+          }
+          media_gallery {
+            url
+          }
+        }
         media_gallery {
           url
         }

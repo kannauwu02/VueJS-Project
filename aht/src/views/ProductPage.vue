@@ -6,6 +6,8 @@
   </div>
   <div v-for="item in product.items" :key="item">
     <ProductInfor :product="item" />
+    <ProductDes :product="item" />
+    <ProductRelated :product="item" />
   </div>
 </template>
 
@@ -13,6 +15,8 @@
 import { useRoute } from 'vue-router';
 import { GET_PRODUCT } from '@/grapql/query_product';
 import ProductInfor from '@/components/Product_infor.vue';
+import ProductDes from '@/components/Product_description.vue';
+import ProductRelated from '@/components/ProductRelated.vue';
 
 export default {
   name: "ProductPage",
@@ -23,6 +27,8 @@ export default {
   },
   components: {
     ProductInfor,
+    ProductDes,
+    ProductRelated
   },
   apollo: {
     product: {
