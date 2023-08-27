@@ -36,7 +36,7 @@ export default {
       variables() {
         const route = useRoute();
         return {
-          sku: route.params.sku,
+          sku: route.params.sku
         };
       },
     },
