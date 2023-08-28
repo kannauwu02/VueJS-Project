@@ -80,10 +80,12 @@
   </div>
 </template>
 <script>
-import { useRoute } from 'vue-router';
 import { GET_PRODUCT } from '@/grapql/query_product';
 export default {
   name: "ProductPage",
+  props: {
+		sku: String, // Declare the sku prop
+	},
   data() {
     return {
       currentImage: 0,
@@ -101,9 +103,8 @@ export default {
     products: {
       query: GET_PRODUCT,
       variables() {
-        const route = useRoute();
         return {
-          sku: route.params.sku, // Use the SKU parameter from the route
+          sku: this.sku, // Use the SKU parameter from the route
         };
       },
       result(result) {

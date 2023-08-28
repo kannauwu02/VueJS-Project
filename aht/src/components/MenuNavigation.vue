@@ -6,30 +6,30 @@
         <template v-if='itemsLv0.children'>
           <div class="menu-lv1-content" v-for="itemsLv1 in itemsLv0.children" :key="itemsLv1">
             <template v-if='itemsLv1.children_count != 0'>
-              <div class="menu-lv1-title"><a class="menu-lv1-title-text" :href="'/' + itemsLv1.url_path + '.html'">{{ itemsLv1.name }}</a></div>
+              <div class="menu-lv1-title"><a class="menu-lv1-title-text" :href="'/category/' + itemsLv1.id">{{ itemsLv1.name }}</a></div>
               <div class="menu-lv2">
                 <template v-for="itemsLv2 in itemsLv1.children" :key="itemsLv2">
                   <div class="menu-lv2-content">
                     <template v-if='itemsLv2.children_count != 0'>
-                      <div class="menu-lv2-title"><a class="menu-lv2-title-text" :href="'/' + itemsLv2.url_path + '.html'">{{ itemsLv2.name }}</a></div>
+                      <div class="menu-lv2-title"><a class="menu-lv2-title-text" :href="'/category/' + itemsLv2.id">{{ itemsLv2.name }}</a></div>
                       <div class="menu-lv3">
                         <template v-for="itemsLv3 in itemsLv2.children.slice(0, 4)" :key="itemsLv3">
-                          <div class="menu-lv3-title"><a class="menu-lv3-title-text" :href="'/' + itemsLv3.url_path + '.html'">{{ itemsLv3.name }}</a></div>
+                          <div class="menu-lv3-title"><a class="menu-lv3-title-text" :href="'/category/' + itemsLv3.id">{{ itemsLv3.name }}</a></div>
                         </template>
                         <template v-if='itemsLv2.children_count > 4'>
-                          <div class="menu-lv3-title view-all"><a class="menu-lv3-title-text view-all" :href="'/' + itemsLv2.url_path + '.html'"> View All {{ itemsLv2.name }}</a></div>
+                          <div class="menu-lv3-title view-all"><a class="menu-lv3-title-text view-all" :href="'/category/' + itemsLv2.id"> View All {{ itemsLv2.name }}</a></div>
                         </template>
                       </div>
                     </template>
                     <template v-else>
-                      <div class="menu-lv2-title"><a class="menu-lv2-title-text" :href="'/' + itemsLv2.url_path + '.html'">{{ itemsLv2.name }}</a></div>
+                      <div class="menu-lv2-title"><a class="menu-lv2-title-text" :href="'/category/' + itemsLv2.id">{{ itemsLv2.name }}</a></div>
                     </template>
                   </div>
                 </template>
               </div>
             </template>
             <template v-else>
-              <div class="menu-lv1-title"><a class="menu-lv1-title-text" :href="'/' + itemsLv1.url_path + '.html'">{{ itemsLv1.name }}</a></div>
+              <div class="menu-lv1-title"><a class="menu-lv1-title-text" :href="'/category/' + itemsLv1.id">{{ itemsLv1.name }}</a></div>
             </template>
           </div>
         </template>
