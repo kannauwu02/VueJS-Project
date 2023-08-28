@@ -6,6 +6,10 @@
 			<div class="filtered-box">
 				<h2 class="heading">Filtered by</h2>
 				<!-- add filter here -->
+				<div v-if="selectedColors" class="filtered-category">
+					<p>Types: {{ selectedColors }}</p>
+					<button class="remove-filter" @click="unselectColors">X</button>
+				</div>
 				
 				<p class="clear-button">Clear all</p>
 			</div>
@@ -18,8 +22,26 @@
 				<div class="features">
 					<h2 class="heading">Features</h2>
 					<!-- add features here -->
-					<color-filter v-if="colorOptions.length > 0" :options="colorOptions" @updateColorFilter="updateColorFilter" />
-					<size-filter v-if="sizeOptions.length > 0" :options="sizeOptions" @updateSizeFilter="updateSizeFilter" />
+					<div class="filter">
+						<h3>Color</h3>
+						<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+							<div v-if="aggregation.attribute_code == 'colour'">
+								<p v-for="option in aggregation.options" :key="option.value">
+									{{ option.label }} ({{ option.count }})
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="filter">
+						<h3>Size</h3>
+						<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+							<div v-if="aggregation.attribute_code == 'size'">
+								<p v-for="option in aggregation.options" :key="option.value">
+									{{ option.label }} ({{ option.count }})
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="brands">
 					<h2 class="heading">Brands</h2>
@@ -29,7 +51,16 @@
 				<div class="prices">
 					<h2 class="heading">Price</h2>
 					<!-- add price here -->
-					<price-filter v-if="priceOptions.length > 0" :options="priceOptions" @updatePriceFilter="updatePriceFilter" />
+					<div class="filter">
+						<h3>Price</h3>
+						<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+							<div v-if="aggregation.attribute_code == 'price'">
+								<p v-for="option in aggregation.options" :key="option.value">
+									{{ option.label }} ({{ option.count }})
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -75,18 +106,18 @@
 </template>
 <script>
 	import { useRoute } from 'vue-router';
-	import ColorFilter from "@/components/ColorFilter.vue";
-	import PriceFilter from "@/components/PriceFilter.vue";
-	import SizeFilter from "@/components/SizeFilter.vue";
+	// import ColorFilter from "@/components/ColorFilter.vue";
+	// import PriceFilter from "@/components/PriceFilter.vue";
+	// import SizeFilter from "@/components/SizeFilter.vue";
 	import { GET_CATEGORIES } from '@/grapql/query_category';
 	import { GET_PRODUCT_FILTER } from '@/grapql/query_product';
 
 	export default {
 		name: "CategoryPage",
 		components: {
-			ColorFilter,
-			PriceFilter,
-			SizeFilter,
+			// ColorFilter,
+			// PriceFilter,
+			// SizeFilter,
 		},
 		data() {
 			return {
@@ -105,7 +136,7 @@
 					{ label: 12, value: 12 },
 				],
 				currentSort: 'default',
-				colorOptions: [], // Initialize with empty array
+				colorOptions: [],
 				sizeOptions: [],
 				priceOptions: [],
 			};
@@ -204,8 +235,7 @@
 				if (this.currentPage < pageInfo.total_pages) {
 					this.updatePagination(this.pageSize, this.currentPage + 1);
 				}
-			},
-			
+			},	
 		},
 		watch: {
 			products: {
@@ -281,6 +311,10 @@ content {
 	line-height: 22px;
 	cursor: pointer;
 	text-decoration: underline;
+}
+
+.filter {
+    text-align: left;
 }
 
 .category-box {

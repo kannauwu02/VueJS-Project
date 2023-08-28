@@ -10,7 +10,7 @@
                 v-model="selectedPrice"
                 @change="updateFilters"
                 />
-                {{ option.label }}$
+                {{ option.label }}$ ({{ count }})
             </label>
             </li>
         </ul>
@@ -24,6 +24,7 @@
   export default {
     props: {
       options: Array, // Aggregation options for color
+      count: String,
     },
     data() {
       return {

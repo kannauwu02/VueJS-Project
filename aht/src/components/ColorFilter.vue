@@ -1,5 +1,5 @@
 <template>
-    <div class="filter" v-if="options.length > 0" v-cloak>
+    <div class="filter" v-if="options.length > 0" >
         <h3>Color</h3>
         <ul>
             <li v-for="option in options" :key="option.value">
@@ -8,9 +8,9 @@
                     type="checkbox"
                     :value="option.value"
                     v-model="selectedColors"
-                    @change="updateFilters"
+                    @change="updateColorFilter"
                     />
-                    {{ option.label }}
+                    {{ option.label }} ({{ count }})
                 </label>
             </li>
         </ul>
@@ -23,7 +23,9 @@
 <script>
   export default {
     props: {
-        options: Array, // Aggregation options for color
+        options: Array,
+        count: String,
+        
     },
     data() {
         return {
@@ -31,11 +33,18 @@
         };
     },
     methods: {
-        updateFilters() {
+        updateColorFilter() {
             this.$emit('updateColorFilter', this.selectedColors);
         },
     },
-    
+    watch: {
+        selectedColors: {
+            handler() {
+                this.updateColorFilter();
+            },
+            deep: true,
+        },
+    },
 };
 </script>
 <style>
