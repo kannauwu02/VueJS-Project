@@ -16,6 +16,9 @@ import ProductRecently from '@/components/ProductRecently.vue';
 
 export default {
   name: "ProductPage",
+  props: {
+		sku: String, // Declare the sku prop
+	},
   data() {
     return {
       product: ''
@@ -32,7 +35,7 @@ export default {
       query: GET_PRODUCT,
       variables() {
         return {
-          sku: this.$route.params.sku
+          sku: this.sku, // Use the SKU parameter from the route
         };
       },
     },

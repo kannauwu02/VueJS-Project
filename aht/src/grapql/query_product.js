@@ -98,7 +98,8 @@ export const GET_PRODUCT = gql`
 export const GET_PRODUCT_FILTER = gql`
 query GetProductFilter($id: String!, $pageSize: Int!, $currentPage: Int!, $sort: ProductAttributeSortInput){
   products(filter: { 
-    category_id: { eq: $id } } 
+      category_id: { eq: $id } 
+    } 
     pageSize: $pageSize
     currentPage: $currentPage
     sort: $sort) {

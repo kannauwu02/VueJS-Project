@@ -17,11 +17,13 @@ const router = createRouter({
       path: "/category/:id",
       name: "CategoryPage",
       component: CategoryPage,
+      props: true, // Allows passing route.params as props
     },
     {
       path: "/product/:sku",
       name: "ProductPage",
       component: ProductPage,
+      props: true,
     },
     {
       path: "/ApiTest",

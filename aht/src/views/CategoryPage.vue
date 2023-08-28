@@ -1,35 +1,71 @@
 <template>
 <div v-if="categories && products">
 	<content>
-		<h2 class="category-title">{{ categories.items[0].name }} ({{ products.total_count }})</h2>
+		<h2 class="category-title">{{ categories.items[0].name }}</h2>
 		<div class="sidebar">
 			<div class="filtered-box">
-				<h2 class="heading">Filtered by</h2>
+				<h2 class="heading">FILTERED BY</h2>
 				<!-- add filter here -->
+				<div v-if="colorOption" class="filtered-category">
+					<img src="../assets/close_icon.png" @click="unselectColor"> Color: {{ colorOption }}	
+				</div>
+				<div v-if="sizeOption" class="filtered-category">
+					<img src="../assets/close_icon.png" @click="unselectSize"> Size: {{ sizeOption }}	
+				</div>
+				<div v-if="priceOption" class="filtered-category">
+					<img src="../assets/close_icon.png" @click="unselectPrice"> Price: {{ priceOption }}$	
+				</div>
 				
-				<p class="clear-button">Clear all</p>
+				<p class="clear-button" @click="unselectAll">Clear all</p>
 			</div>
 			<div class="category-box">
-				<div class="types">
-					<h2 class="heading">Types</h2>
+				<div class="category">
+					<h2 class="heading">TYPES</h2>
 					<!-- add types here -->
 					
 				</div>
-				<div class="features">
-					<h2 class="heading">Features</h2>
+				<div class="category">
+					<h2 class="heading">FEATURES</h2>
 					<!-- add features here -->
-					<color-filter v-if="colorOptions.length > 0" :options="colorOptions" @updateColorFilter="updateColorFilter" />
-					<size-filter v-if="sizeOptions.length > 0" :options="sizeOptions" @updateSizeFilter="updateSizeFilter" />
+					<div class="filter" data-content-type="text">
+						<h3>COLOR</h3>
+						<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+							<div v-if="aggregation.attribute_code == 'colour'">
+								<p class="filter-text" v-for="option in aggregation.options" :key="option.value" @click="selectColor(option.label)">
+									{{ option.label }} ({{ option.count }})
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="filter" data-content-type="text">
+						<h3>SIZE</h3>
+						<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+							<div v-if="aggregation.attribute_code == 'size'">
+								<p class="filter-text" v-for="option in aggregation.options" :key="option.value" @click="selectSize(option.label)">
+									{{ option.label }} ({{ option.count }})
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="brands">
-					<h2 class="heading">Brands</h2>
+				<div class="category">
+					<h2 class="heading">BRANDS</h2>
 					<!-- add brands here -->
 					
 				</div>
-				<div class="prices">
-					<h2 class="heading">Price</h2>
+				<div class="category">
+					<h2 class="heading">PRICE</h2>
 					<!-- add price here -->
-					<price-filter v-if="priceOptions.length > 0" :options="priceOptions" @updatePriceFilter="updatePriceFilter" />
+					<div class="filter" data-content-type="text">
+						<!-- <h3>Price</h3> -->
+						<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+							<div v-if="aggregation.attribute_code == 'price'">
+								<p class="filter-text" v-for="option in aggregation.options" :key="option.value" @click="selectPrice(option.label)">
+									{{ option.label }}$ ({{ option.count }})
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -57,13 +93,20 @@
 			<div class="product-content">
 				<div class="product-category" v-if="products">
 					<div class="product-container" v-for="product in products.items" :key="product.sku">
-						<router-link :to="{ name: 'ProductPage', params: { sku: product.sku } }" class="router-link">
+						<a :href="'/product/' + product.sku" class="router-link"	>
 							<img :src="product.thumbnail.url" alt="Product Thumbnail">
 							<p class="product-name">{{ product.name }}</p>
 							<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
-						</router-link>
+						</a>
 					</div>
 					<p v-if="products.items.total_count === 0">No products.</p>
+				</div>
+			</div>
+			<div class="product-footer" v-if="products.total_count > 0">
+				<div class="paginator">
+					<button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+					<span>{{ currentPage }}</span>
+					<button @click="nextPage(products.page_info)" :disabled="currentPage === products.page_info.total_pages">Next</button>
 				</div>
 			</div>
 		</div>
@@ -74,19 +117,15 @@
 </div>
 </template>
 <script>
-	import { useRoute } from 'vue-router';
-	import ColorFilter from "@/components/ColorFilter.vue";
-	import PriceFilter from "@/components/PriceFilter.vue";
-	import SizeFilter from "@/components/SizeFilter.vue";
+	// import { useRoute } from 'vue-router';
 	import { GET_CATEGORIES } from '@/grapql/query_category';
 	import { GET_PRODUCT_FILTER } from '@/grapql/query_product';
+	const $ = window.$
 
 	export default {
 		name: "CategoryPage",
-		components: {
-			ColorFilter,
-			PriceFilter,
-			SizeFilter,
+		props: {
+			id: String, // Declare the id prop
 		},
 		data() {
 			return {
@@ -105,17 +144,15 @@
 					{ label: 12, value: 12 },
 				],
 				currentSort: 'default',
-				colorOptions: [], // Initialize with empty array
-				sizeOptions: [],
-				priceOptions: [],
+				colorOption: '',
+				sizeOption: '',
+				priceOption: '',
 			};
 		},
 		apollo: {
 			products: {
 				query: GET_PRODUCT_FILTER,
 				variables() {
-					// const route = useRoute();
-					const id = localStorage.getItem('categoryId');
 					let sortOption = {};
 					if (this.currentSort === 'name-asc') {
 						sortOption = { name: 'ASC' };
@@ -128,9 +165,9 @@
 					} else {
 						sortOption = { relevance: 'ASC' };
 					}
-					
 					return {
-						id: id, // Use the name parameter from the route
+						// Use the name parameter from the route
+						id: this.id,
 						pageSize: this.pageSize,
 						currentPage: this.currentPage,
 						sort: sortOption
@@ -146,11 +183,9 @@
 			categories: {
 				query: GET_CATEGORIES,
 				variables() {
-					// const route = useRoute();
-					const id = localStorage.getItem('categoryId');
-					
 					return {
-						id: id, // Use the name parameter from the route	
+						// Use the name parameter from the route
+						id: this.id,	
 					};
 				},
 				result(result) {
@@ -162,25 +197,7 @@
 			},
 			
 		},
-		
 		methods: {
-			getCategoryId(routeId) {
-				// Check if the route parameter exists in local storage
-				const storedId = localStorage.getItem('categoryId');
-
-				// Use the stored value if available, otherwise use the route parameter
-				return storedId || routeId;
-			},
-			extractAggregationOptions(attributeCode) {
-				// Check if products is defined before extracting aggregations
-				if (this.products) {
-					const aggregation = this.products.aggregations.find(
-						(agg) => agg.attribute_code === attributeCode
-					);
-					return aggregation ? aggregation.options : [];
-				}
-				return [];
-			},
 			// Function to change sorting option
 			changeSort(option) {
 				this.currentSort = option;
@@ -205,25 +222,40 @@
 					this.updatePagination(this.pageSize, this.currentPage + 1);
 				}
 			},
-			
-		},
-		watch: {
-			products: {
-				deep: true,
-				handler(newVal) {
-					if (newVal.aggregations) {
-						this.colorOptions = this.extractAggregationOptions('colour');
-						this.sizeOptions = this.extractAggregationOptions('size');
-						this.priceOptions = this.extractAggregationOptions('price');
-					}
-				},
+			selectColor(option) {
+				this.colorOption = option;
+			},
+			selectPrice(option) {
+				this.priceOption = option;
+			},
+			selectSize(option) {
+				this.sizeOption = option;
+			},
+			unselectColor() {
+				this.colorOption = '';
+			},
+			unselectSize() {
+				this.sizeOption = '';
+			},
+			unselectPrice() {
+				this.priceOption = '';
+			},
+			unselectAll() {
+				this.unselectColor();
+				this.unselectSize();
+				this.unselectPrice();
 			},
 		},
-		created() {
-			const route = useRoute();
-			// Store the route parameter in local storage
-			localStorage.setItem('categoryId', route.params.id);
-		},
+		updated() {
+			// Unbind previous click event handlers
+			$('.category h2').off('click');
+
+			// Attach new click event handler
+			$('.category h2').click(function () {
+				$(this).siblings('[data-content-type="text"]').slideToggle();
+				$(this).toggleClass('active');
+			});
+		}
 	}
 </script>
 <style scoped>
@@ -233,10 +265,18 @@ content {
 	/* align-items: center; */
 	justify-content: center;
 	width: 100%;
+	margin-bottom: 64px;
 }
 
 .category-title {
 	width: 100%;
+	color: #8AD038;
+	font-family: Oswald;
+	font-size: 42px;
+	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 34px;
+	text-align: center;
 }
 
 .router-link {
@@ -249,11 +289,12 @@ content {
 	display: flex;
 	flex-direction: column;
 	column-gap: 15px;
-	width: 15%;
+	width: 18%;
 	
 }
 
 .filtered-box {
+	padding-left: 15px;
 	box-sizing: border-box;
 	height: fit-content;
 	border: 1px solid #EEEEEE;
@@ -262,18 +303,92 @@ content {
 	box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.08);
 }
 
-.heading {
-	height: fit-content;
-	width: fit-content;
+.filtered-box .filtered-category {
+	display: flex;
+	text-align: left;
+	color: #4A4A4A;
+	font-family: Montserrat;
+	font-size: 16px;
+	letter-spacing: 0;
+	line-height: 26px;
+	align-items: center;
+}
+
+.filtered-box .filtered-category img {
+	width: 16px;
+	height: 16px;
+	margin-right: 6px;
+}
+
+.filtered-box h2 {
+	font-weight: 500;
+	padding: 20px 0 17px;
 	color: #000000;
 	font-family: Oswald;
 	letter-spacing: 0.5px;
 	line-height: 17px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.category {
+	border-top: 1px solid #EBEBEB;
+	text-align: left;
+	margin: 0 15px;
+}
+
+
+.category:first-child {
+  border: none;
+}
+
+.category h2 {
+	font-weight: 500;
+	padding: 20px 0 17px;
+	color: #000000;
+	font-family: Oswald;
+	letter-spacing: 0.5px;
+	line-height: 17px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.category h2:after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background-image: url('../assets/plus-footer-icon.jpg');
+  display: block;
+  background-size: contain;
+}
+
+.category h2.active:after {
+	background-image: url('../assets/minus-footer-icon.jpg');
+}
+
+.category [data-content-type="text"] {
+	display: none;
+	padding-bottom: 10px;
+	margin-top: -5px;
+}
+
+.filter-text {
+	color: #4A4A4A;
+	font-family: Montserrat;
+	font-size: 16px;
+	letter-spacing: 0;
+	line-height: 26px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.filter-text:hover {
+  background-color: #f0f0f0;
 }
 
 .clear-button{
 	height: 22px;
-	width: 56px;
+	width: fit-content;
 	color: #000000;
 	font-family: Montserrat;
 	font-size: 16px;
@@ -283,7 +398,20 @@ content {
 	text-decoration: underline;
 }
 
+.filter {
+    text-align: left;
+}
+
+.filter h3 {
+	color: #000000;
+	font-family: Oswald;
+	letter-spacing: 0.5px;
+	line-height: 17px;
+}
+
 .category-box {
+	/* padding-left: 15px; */
+	margin-top: 16px;
 	box-sizing: border-box;
 	height: fit-content;
 	border: 1px solid #EEEEEE;
@@ -326,17 +454,22 @@ content {
   background-color: #f0f0f0;
 }
 
+select {
+	height: 40px;
+}
+
 .product-sort {
 	display: flex;
 }
 
 .product-show {
 	display: flex;
+	align-items: center;
 }
 
 .product-box {
 	margin-left: 40px;
-	width: 50%;
+	width: 58%;
 }
 
 .product-header {
@@ -356,10 +489,11 @@ content {
 	flex-wrap: wrap;
 	justify-content: left;
 	margin-top: 24px;
+	column-gap: 21px;
 }
 
 .product-container {
-	flex: 0 0 calc(15% - 10px);
+	flex: 0 0 calc(15%);
 	margin: 5px;
 }
 
@@ -371,11 +505,23 @@ img {
 .product-name {
 	font-size: 20px;
 	text-decoration: none;
+	font-family: Montserrat;
+	color: #111111;
+	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 18px;
 }
 
 .product-price {
 	color: #D0021B;
+	font-family: Montserrat;
 	font-size: 20px;
 	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 24px;
+}
+
+.product-footer {
+	margin-top: 48px;
 }
 </style>
