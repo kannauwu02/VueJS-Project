@@ -8,15 +8,16 @@
     <ProductInfor :product="item" />
     <ProductDes :product="item" />
     <ProductRelated :product="item" />
+    <ProductRecently :product="item" />
   </div>
 </template>
 
 <script>
-import { useRoute } from 'vue-router';
 import { GET_PRODUCT } from '@/grapql/query_product';
 import ProductInfor from '@/components/Product_infor.vue';
 import ProductDes from '@/components/Product_description.vue';
 import ProductRelated from '@/components/ProductRelated.vue';
+import ProductRecently from '@/components/ProductRecently.vue';
 
 export default {
   name: "ProductPage",
@@ -28,15 +29,15 @@ export default {
   components: {
     ProductInfor,
     ProductDes,
-    ProductRelated
+    ProductRelated,
+    ProductRecently
   },
   apollo: {
     product: {
       query: GET_PRODUCT,
       variables() {
-        const route = useRoute();
         return {
-          sku: route.params.sku
+          sku: this.$route.params.sku
         };
       },
     },

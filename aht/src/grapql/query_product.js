@@ -6,6 +6,9 @@ export const GET_PRODUCT = gql`
       items {
         name
         sku
+        thumbnail {
+          url
+        }
         price_range {
           minimum_price {
             regular_price {

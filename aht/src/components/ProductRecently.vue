@@ -1,14 +1,15 @@
 <template>
-    <div class="product_related" v-if="product.related_products.length != 0">
+    <div class="product_recently">
         <div class="container">
-            <span class="heading">Items you may like</span>
-            <div class="list_product slick-slider">
-                <div class="product_related-item" v-for="(item, index) in product.related_products" :key="index">
-                    <router-link :to="{ name: 'ProductPage', params: { sku: item.sku } }">
-                        <img :src="product.thumbnail.url" alt="Product Thumbnail">
-                        <p class="product_name-related">{{ item.name }}</p>
+            <span class="heading">Your Recently Viewed</span>
+            <div class="recently-viewed-list slick-slider">
+                <div class="product_recently-item" v-for="(product, index) in recentlyViewed" :key="index">
+                    <router-link :to="{ name: 'ProductPage', params: { sku: product.sku } }">
+                        <img :src="product.image" alt="Product Thumbnail">
+                        <p class="product_name-related">{{ product.name }}</p>
                     </router-link>
-                    <span class="product_name-price">{{ formatCurrency(this.product.price_range.minimum_price.regular_price.value) }}</span>
+                    <span class="product_name-price">{{
+                        formatCurrency(product.price) }}</span>
                 </div>
             </div>
         </div>
@@ -16,16 +17,17 @@
 </template>
   
 <script>
+import VueCookies from 'vue-cookies'
 const $ = window.$
 export default {
-    name: "ProductRelated",
+    name: "ProductRecently",
     data() {
         return {
-
+            recentlyViewed: this.getRecentlyViewedFromCookie(),
         };
     },
     props: {
-        product: {}
+        product: {},
     },
     methods: {
         formatCurrency(value) {
@@ -34,9 +36,32 @@ export default {
                 currency: this.product.price_range.minimum_price.regular_price.currency,
             }).format(value);
         },
+        addToRecentlyViewed(product) {
+            const data = {
+                name: product.name,
+                sku: product.sku,
+                image: product.thumbnail.url,
+                price: product.price_range.minimum_price.regular_price.value
+            }
+            if (!this.recentlyViewed.some(item => item.sku === data.sku)) {
+                this.recentlyViewed.unshift(data);
+                console.log(this.recentlyViewed)
+                const jsonString = JSON.stringify(this.recentlyViewed);
+                VueCookies.set('recentlyViewed', jsonString, '1h');
+            }
+        },
+        getRecentlyViewedFromCookie() {
+            const jsonArray = VueCookies.get('recentlyViewed');
+            if (jsonArray) {
+                return jsonArray;
+            } else return []
+        },
+    },
+    created() {
+        this.addToRecentlyViewed(this.product);
     },
     mounted() {
-        $('.list_product.slick-slider').slick({
+        $('.recently-viewed-list.slick-slider').slick({
             dots: false,
             infinite: true,
             speed: 300,
@@ -70,18 +95,23 @@ export default {
             ]
         })
     },
-}
+};
 </script>
   
-<style>
-.product_related {
-    background-image: linear-gradient(to right, #277E93, #C0D854);
+  
+<style scoped>
+.product_recently {
     padding: 64px 0;
 }
 
-.product_related-item a {
+.product_recently a {
     text-decoration: none;
 }
+
+.slick-slider .slick-track {
+    margin: 0;
+}
+
 .product_name-related {
     font-size: 14px;
     font-weight: 500;
@@ -98,12 +128,12 @@ export default {
     display: block;
 }
 
-.product_related .heading {
+.product_recently .heading {
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
     font-size: 42px;
     font-weight: 600;
-    color: white;
+    color: black;
     display: block;
     margin-bottom: 48px;
     text-align: left;
@@ -113,7 +143,7 @@ export default {
     display: flex;
 }
 
-.list_product  .slick-slide:last-child {
+.list_product .slick-slide:last-child {
     margin-right: 0;
 }
 
