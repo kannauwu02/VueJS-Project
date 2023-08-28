@@ -1,9 +1,4 @@
 <template>
-  <div>
-    <router-link to="/">HomePage</router-link>
-    <router-link to="/CategoryPage">CategoryPage</router-link>
-    <router-link to="/ProductPage">ProductPage</router-link>
-  </div>
   <div v-for="item in product.items" :key="item">
     <ProductInfor :product="item" />
     <ProductDes :product="item" />

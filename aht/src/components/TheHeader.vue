@@ -15,19 +15,19 @@
           <div class="logo">
             <img @click="logoClicked($event)" :src="config.base_media_url + 'logo/' + config.header_logo_src" alt="">
           </div>
-          <div class="search">
+          <!-- <div class="search">
             <div class="search-bar">
               <input type="text" placeholder="Search COOLRIVER…">
               <div class="icon">
                 <img src="../assets/search_icon_dk.png" alt="">
               </div>
             </div>
-          </div>
-          <div class="contact">
+          </div> -->
+          <!-- <div class="contact">
             <div class="" v-for="item in headerContact.items" :key="item">
               <div v-html="item.content"></div>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="header-bottom">
           <MenuNavigation />
@@ -43,11 +43,11 @@
         <div class="menu">
           <MenuSlideout />
         </div>
-        <div class="phone">
+        <!-- <div class="phone">
           <div class="" v-for="item in headerContact.items" :key="item">
             <div v-html="item.content"></div>
           </div>
-        </div>
+        </div> -->
         <div class="logo">
           <img @click="logoClicked($event)" :src="config.base_media_url + 'logo/' + config.header_logo_src" alt="">
         </div>

@@ -305,6 +305,7 @@ export default {
 }
 
 .group {
+    margin-top: 56px;
     box-shadow: 8px 8px 40px 10px rgba(0, 0, 0, .08);
     padding: 24px 32px 24px 24px;
 }
@@ -485,9 +486,10 @@ select {
     margin-bottom: 16px;
 }
 
-.pagebuilder-column {
+ #html-body .pagebuilder-column-line .pagebuilder-column {
     display: flex;
     align-items: center;
+    flex-direction: row;
 }
 
 .pagebuilder-mobile-hidden {
@@ -504,7 +506,7 @@ select {
     min-width: 42px;
 }
 
-.pagebuilder-column figure img {
+#html-body .pagebuilder-column figure img {
     height: 100%;
     object-fit: contain;
 }

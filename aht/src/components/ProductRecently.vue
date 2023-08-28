@@ -108,10 +108,6 @@ export default {
     text-decoration: none;
 }
 
-.slick-slider .slick-track {
-    margin: 0;
-}
-
 .product_name-related {
     font-size: 14px;
     font-weight: 500;

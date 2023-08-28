@@ -82,6 +82,15 @@ export default {
 .product_related-item a {
     text-decoration: none;
 }
+
+.slick-slider .slick-track {
+    margin: 0 !important;
+}
+
+.slick-slide img {
+    width: 100%;
+}
+
 .product_name-related {
     font-size: 14px;
     font-weight: 500;
