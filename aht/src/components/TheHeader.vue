@@ -15,19 +15,19 @@
           <div class="logo">
             <img @click="logoClicked($event)" :src="config.base_media_url + 'logo/' + config.header_logo_src" alt="">
           </div>
-          <div class="search">
+          <!-- <div class="search">
             <div class="search-bar">
               <input type="text" placeholder="Search COOLRIVER…">
               <div class="icon">
                 <img src="../assets/search_icon_dk.png" alt="">
               </div>
             </div>
-          </div>
-          <div class="contact">
+          </div> -->
+          <!-- <div class="contact">
             <div class="" v-for="item in headerContact.items" :key="item">
               <div v-html="item.content"></div>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="header-bottom">
           <MenuNavigation />
@@ -43,11 +43,11 @@
         <div class="menu">
           <MenuSlideout />
         </div>
-        <div class="phone">
+        <!-- <div class="phone">
           <div class="" v-for="item in headerContact.items" :key="item">
             <div v-html="item.content"></div>
           </div>
-        </div>
+        </div> -->
         <div class="logo">
           <img @click="logoClicked($event)" :src="config.base_media_url + 'logo/' + config.header_logo_src" alt="">
         </div>
@@ -69,21 +69,19 @@
 <script>
   import gql from 'graphql-tag'
   import MenuSlideout from "@/components/MenuSlideout.vue"
-  import MenuNavigation from "@/components/MenuNavigation.vue"
 
-  const $ = window.$
+const $ = window.$
 
   export default {
     name: "TheHeader",
     components: {
-      MenuSlideout,
-      MenuNavigation
+      MenuSlideout
     },
     data() {
       return {
         config: '',
         headerTop: '',
-        headerContact: ''
+        hedaerContact: ''
       };
     },
     apollo: {
@@ -93,14 +91,14 @@
           header_logo_src
         },
       }`,
-      headerTop: gql`query {
+    headerTop: gql`query {
         headerTop: cmsBlocks(identifiers: ["header-top-bar"]) {
           items {
             content
           }
         },
       }`,
-      headerContact: gql`query {
+    headerContact: gql`query {
         headerContact: cmsBlocks(identifiers: ["header-contact"]) {
           items {
             content
@@ -109,24 +107,13 @@
       }`,
     },
     updated: function () {
-      if (!document.querySelector('.header-top-bar-wrapper .mobile-item .slick-slider')) {
-        $('.header-top-bar-wrapper .mobile-item .pagebuilder-column-line').slick({
-          dots: false,
-          infinite: true,
-          speed: 300,
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        });
-      }
-    },
-    methods: {
-      logoClicked(event) {
-        if (window.location.origin !== window.location.href) {
-          window.location.replace(window.location.origin)
-        } else {
-          event.preventDefault()
-        }
-      }
+      $('.header-top-bar-wrapper.mobile-item .pagebuilder-column-line').slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+      });
     }
   }
 </script>
