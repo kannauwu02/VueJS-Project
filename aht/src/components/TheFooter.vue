@@ -27,7 +27,6 @@
       }`,
     },
     updated: function () {
-      console.log(123)
       $('.accordion h4').click(function(){
         $(this).siblings('[data-content-type="text"]').slideToggle();
         $(this).toggleClass('active');
@@ -152,6 +151,7 @@
 }
 
 #html-body .footer-bottom .pagebuilder-column-line {
+  box-sizing: border-box;
   display: block;
 }
 

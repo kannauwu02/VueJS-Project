@@ -145,7 +145,7 @@ header {
   position: sticky;
   background: #fff;
   top: 0;
-  z-index: 1;
+  z-index: 2;
 }
 
 figure {
@@ -187,10 +187,12 @@ header img {
   justify-content: space-between;
 }
 
-.header-top-bar-wrapper .pagebuilder-column {
+#html-body .header-top-bar-wrapper .pagebuilder-column {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: row;
+  width: auto;
 }
 
 .header-top-bar-wrapper p {
@@ -260,6 +262,10 @@ header img {
 
 .mobile-item {
   padding: 12px 45px;
+}
+
+#html-body .mobile-item .pagebuilder-column-line {
+  display: block;
 }
 
 .header-mobile .header-items {
