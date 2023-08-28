@@ -1,11 +1,10 @@
 <template>
   <div class="index-index" v-html="home.content"></div>
-  <div class="newsletter" v-for="item in newsletter.items" :key="item">
-    <div v-html="item.content"></div>
-  </div>
+  <NewSletter />
 </template>
 <script>
   import gql from 'graphql-tag';
+  import NewSletter from '@/components/NewSletter.vue';
   const $ = window.$
 
   export default {
@@ -16,17 +15,13 @@
         newsletter: ''
       };
     },
+    components: {
+      NewSletter
+    },
     apollo: {
       home: gql`query {
         home: cmsPage(identifier: "home") {
           content
-        },
-      }`,
-      newsletter: gql`query {
-        newsletter: cmsBlocks(identifiers: ["newsletter"]) {
-          items {
-            content
-          }
         },
       }`,
     },
@@ -51,18 +46,19 @@
       }
 
       const categories = document.querySelector('.home-content-categories .pagebuilder-column-line')
-
-      setTimeout(function () {
-        alignHeight(categories.querySelectorAll('[data-content-type="image"] a'))
-        alignHeight(categories.querySelectorAll('[data-content-type="text"]'))
-      }, 500)
-
-      window.addEventListener('resize', function () {
+      if (categories) {
         setTimeout(function () {
           alignHeight(categories.querySelectorAll('[data-content-type="image"] a'))
           alignHeight(categories.querySelectorAll('[data-content-type="text"]'))
         }, 500)
-      }, true)
+
+        window.addEventListener('resize', function () {
+          setTimeout(function () {
+            alignHeight(categories.querySelectorAll('[data-content-type="image"] a'))
+            alignHeight(categories.querySelectorAll('[data-content-type="text"]'))
+          }, 500)
+        }, true)
+      }
 
       if (!document.querySelector('.home-content-slider .slick-slider')) {
         $('.home-content-slider .pagebuilder-column-line').slick({
