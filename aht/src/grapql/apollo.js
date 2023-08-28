@@ -14,11 +14,10 @@ const apolloClient = new ApolloClient({
   link: httpLink,
   cache,
   headers: {
-    'Accept': '*',
-    'Access-Control-Allow-Origin:': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': '*',
-    'Content-Type': 'application/json',
+    "Accept": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    "Content-Type:": "application/json; charset=UTF-8"
   }
 })
 

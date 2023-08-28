@@ -1,13 +1,21 @@
 <template>
-  <router-view></router-view>
+  <div class="pageSizing" id="html-body">
+    <TheHeader />
+    <router-view></router-view>
+    <TheFooter />
+  </div>
 </template>
 
 <script>
+import TheHeader from "@/components/TheHeader.vue";
+import TheFooter from "@/components/TheFooter.vue";
+
 export default {
   name: 'App',
   components: {
-    
-  }
+    TheHeader,
+    TheFooter
+  },
 }
 </script>
 
