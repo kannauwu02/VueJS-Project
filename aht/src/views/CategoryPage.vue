@@ -1,110 +1,97 @@
 <template>
-<content>
-	<div class="sidebar">
-		<div class="filtered-box">
-			<h2 class="heading">Filtered by</h2>
-			<!-- add filter here -->
-			<div v-if="selectedCategory" class="filtered-category">
-				<p>Types: {{ selectedCategory }}</p>
-				<button class="remove-filter" @click="unselectCategory">X</button>
+<div v-if="categories && products">
+	<content>
+		<h2 class="category-title">{{ categories.items[0].name }} ({{ products.total_count }})</h2>
+		<div class="sidebar">
+			<div class="filtered-box">
+				<h2 class="heading">Filtered by</h2>
+				<!-- add filter here -->
+				
+				<p class="clear-button">Clear all</p>
 			</div>
-			<div v-if="selectedBrand" class="filtered-category">
-				<p>Brand: {{ selectedBrand }}</p>
-				<button class="remove-filter" @click="unselectBrand">X</button>
-			</div>
-			<p class="clear-button" @click="unselectAll">Clear all</p>
-		</div>
-		<div class="category-box">
-			<div class="types">
-				<h2 class="heading">Types</h2>
-				<!-- add types here -->
-				<div class="dropdown">
-					<button class="dropdown-button" @click="toggleDropdownCategory">Select a category</button>
-					<div class="dropdown-content" v-show="showDropdownCategory">
-						<p v-for="(category, index) in uniqueCategories" :key="index" @click="selectCategory(category)">{{ category }}</p>
-					</div>
+			<div class="category-box">
+				<div class="types">
+					<h2 class="heading">Types</h2>
+					<!-- add types here -->
+					
 				</div>
-			</div>
-			<div class="brands">
-				<h2 class="heading">Brands</h2>
-				<!-- add brands here -->
-				<div class="dropdown">
-					<button class="dropdown-button" @click="toggleDropdownBrand">Select a brand</button>
-					<div class="dropdown-content" v-show="showDropdownBrand">
-						<p v-for="(brand, index) in uniqueBrand" :key="index" @click="selectBrand(brand)">{{ brand }}</p>
-					</div>
+				<div class="features">
+					<h2 class="heading">Features</h2>
+					<!-- add features here -->
+					<color-filter v-if="colorOptions.length > 0" :options="colorOptions" @updateColorFilter="updateColorFilter" />
+					<size-filter v-if="sizeOptions.length > 0" :options="sizeOptions" @updateSizeFilter="updateSizeFilter" />
 				</div>
-			</div>
-			<div class="price">
-				<h2 class="heading">Price</h2>
-				<!-- add price here -->
-				<div v-for="category in categories.items" :key="category.id">
-					<h2>{{ category.name }}</h2>
-					<!-- Display other category data here -->
+				<div class="brands">
+					<h2 class="heading">Brands</h2>
+					<!-- add brands here -->
+					
+				</div>
+				<div class="prices">
+					<h2 class="heading">Price</h2>
+					<!-- add price here -->
+					<price-filter v-if="priceOptions.length > 0" :options="priceOptions" @updatePriceFilter="updatePriceFilter" />
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="product-box">
-		<div class="product-header">
-			<div class="product-sort">
+		<div class="product-box">
+			<div class="product-header" v-if="products.total_count > 0">
 				<div class="product-sort">
 					<label for="sort-select">Sort by:</label>
-					<select id="sort-select" v-model="selectedSortOption" @change="sortProducts">
+					<select id="sort-select" v-model="currentSort" @change="changeSort(currentSort)">
 						<option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
 					</select>
 				</div>
-			</div>
-			<div class="paginator">
-				<!-- page -->
-				<PaginatorCategory
-					:current-page="currentPage"
-					:total-pages="totalPages"
-					@page-change="handlePageChange"
-				/>
-			</div>
-		</div>
-		<div class="product-content">
-			<div class="product-category" v-for="category in categories.items" :key="category.id">
-				<h2>{{ category.name }} ({{ category.products.total_count }})</h2>
-				
-				<div class="product-container" v-for="product in category.products.items" :key="product.sku">
-					<router-link :to="{ name: 'ProductPage', params: { sku: product.sku } }">
-						<img :src="product.thumbnail.url" alt="Product Thumbnail">
-						<p class="product-name">{{ product.name }}</p>
-						<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
-					</router-link>
+				<div class="paginator">
+					<button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+					<span>{{ currentPage }}</span>
+					<button @click="nextPage(products.page_info)" :disabled="currentPage === products.page_info.total_pages">Next</button>
+				</div>
+				<div class="product-show">
+					<label for="show-select">Show:</label>
+					<select id="show-select" v-model="pageSize" @change="changeSize(pageSize)">
+						<option v-for="option in pageSizeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+					</select>
+					per page.
 				</div>
 			</div>
-			<p v-if="displayedProducts.length === 0">No products match the filter.</p>
+			<div class="product-content">
+				<div class="product-category" v-if="products">
+					<div class="product-container" v-for="product in products.items" :key="product.sku">
+						<router-link :to="{ name: 'ProductPage', params: { sku: product.sku } }" class="router-link">
+							<img :src="product.thumbnail.url" alt="Product Thumbnail">
+							<p class="product-name">{{ product.name }}</p>
+							<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
+						</router-link>
+					</div>
+					<p v-if="products.items.total_count === 0">No products.</p>
+				</div>
+			</div>
 		</div>
-	</div>
-</content>
+	</content>
+</div>
+<div v-else>
+    Loading... <!-- or any other loading indicator you prefer -->
+</div>
 </template>
 <script>
-	import PaginatorCategory from "@/components/PaginatorCategory.vue";
+	import { useRoute } from 'vue-router';
+	import ColorFilter from "@/components/ColorFilter.vue";
+	import PriceFilter from "@/components/PriceFilter.vue";
+	import SizeFilter from "@/components/SizeFilter.vue";
 	import { GET_CATEGORIES } from '@/grapql/query_category';
+	import { GET_PRODUCT_FILTER } from '@/grapql/query_product';
 
 	export default {
 		name: "CategoryPage",
-		apollo: {
-			categories: {
-				query: GET_CATEGORIES,
-			},
-		},
 		components: {
-			PaginatorCategory,
+			ColorFilter,
+			PriceFilter,
+			SizeFilter,
 		},
 		data() {
 			return {
-				products: [],
-				msg: '',
-				itemsPerPage: 8,
+				pageSize: 4,
 				currentPage: 1,
-				showDropdownBrand: false,
-				showDropdownCategory: false,
-				selectedCategory: '',
-				selectedBrand: '',
 				sortOptions: [
 					{ label: 'Default', value: 'default' },
 					{ label: 'Name A-Z', value: 'name-asc' },
@@ -112,145 +99,163 @@
 					{ label: 'Price Ascending', value: 'price-asc' },
 					{ label: 'Price Descending', value: 'price-desc' },
 				],
-				selectedSortOption: 'default',
+				pageSizeOptions: [
+					{ label: 4, value: 4 },
+					{ label: 8, value: 8 },
+					{ label: 12, value: 12 },
+				],
+				currentSort: 'default',
+				colorOptions: [], // Initialize with empty array
+				sizeOptions: [],
+				priceOptions: [],
 			};
 		},
-		computed: {
-			totalPages() {
-				// Calculate the total number of pages based on filtered products
-				const filteredProducts = this.products.filter(product => {
-					const categoryMatch = !this.selectedCategory || product.category === this.selectedCategory;
-					const brandMatch = !this.selectedBrand || product.brand === this.selectedBrand;
-					return categoryMatch && brandMatch;
-				});
-				
-				return Math.ceil(filteredProducts.length / this.itemsPerPage);
+		apollo: {
+			products: {
+				query: GET_PRODUCT_FILTER,
+				variables() {
+					// const route = useRoute();
+					const id = localStorage.getItem('categoryId');
+					let sortOption = {};
+					if (this.currentSort === 'name-asc') {
+						sortOption = { name: 'ASC' };
+					} else if (this.currentSort === 'price-asc') {
+						sortOption = { price: 'ASC' };
+					} else if (this.currentSort === 'name-desc') {
+						sortOption = { name: 'DESC' };
+					} else if (this.currentSort === 'price-desc') {
+						sortOption = { price: 'DESC' };
+					} else {
+						sortOption = { relevance: 'ASC' };
+					}
+					
+					return {
+						id: id, // Use the name parameter from the route
+						pageSize: this.pageSize,
+						currentPage: this.currentPage,
+						sort: sortOption
+					};	
+				},
+				result(result) {
+					if (!result.loading && !result.error) {
+						// Check if the query has finished loading and has no errors
+						console.log(result.data.products); // Access the query result here
+					}
+				},
 			},
-			displayedProducts() {
-				// Apply filters
-				let filteredProducts = this.products;
-				if (this.selectedCategory) {
-					filteredProducts = filteredProducts.filter(product => product.category === this.selectedCategory);
+			categories: {
+				query: GET_CATEGORIES,
+				variables() {
+					// const route = useRoute();
+					const id = localStorage.getItem('categoryId');
+					
+					return {
+						id: id, // Use the name parameter from the route	
+					};
+				},
+				result(result) {
+					if (!result.loading && !result.error) {
+						// Check if the query has finished loading and has no errors
+						console.log(result.data.categories); // Access the query result here
+					}
+				},
+			},
+			
+		},
+		
+		methods: {
+			getCategoryId(routeId) {
+				// Check if the route parameter exists in local storage
+				const storedId = localStorage.getItem('categoryId');
+
+				// Use the stored value if available, otherwise use the route parameter
+				return storedId || routeId;
+			},
+			extractAggregationOptions(attributeCode) {
+				// Check if products is defined before extracting aggregations
+				if (this.products) {
+					const aggregation = this.products.aggregations.find(
+						(agg) => agg.attribute_code === attributeCode
+					);
+					return aggregation ? aggregation.options : [];
 				}
-				if (this.selectedBrand) {
-					filteredProducts = filteredProducts.filter(product => product.brand === this.selectedBrand);
+				return [];
+			},
+			// Function to change sorting option
+			changeSort(option) {
+				this.currentSort = option;
+			},
+			changeSize(option) {
+				this.pageSize = option;
+			},
+			// Function to update pageSize and currentPage
+			updatePagination(newPageSize, newCurrentPage) {
+				this.pageSize = newPageSize;
+				this.currentPage = newCurrentPage;
+			},
+			// Function to navigate to the previous page
+			previousPage() {
+				if (this.currentPage > 1) {
+					this.updatePagination(this.pageSize, this.currentPage - 1);
 				}
-				
-				const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-				const endIndex = startIndex + this.itemsPerPage;
-				return filteredProducts.slice(startIndex, endIndex);
 			},
-			uniqueCategories() {
-				// Extract unique category names from products array
-				const categoriesSet = new Set();
-				this.products.forEach((product) => {
-					categoriesSet.add(product.category);
-				});
-				return Array.from(categoriesSet);
+			// Function to navigate to the next page
+			nextPage(pageInfo) {
+				if (this.currentPage < pageInfo.total_pages) {
+					this.updatePagination(this.pageSize, this.currentPage + 1);
+				}
 			},
-			uniqueBrand() {
-				// Extract unique category names from products array
-				const brandSet = new Set();
-				this.products.forEach((product) => {
-					brandSet.add(product.brand);
-				});
-				return Array.from(brandSet);
-			},
+			
 		},
 		watch: {
-			selectedCategory: 'resetCurrentPage',
-			selectedBrand: 'resetCurrentPage',
-		},
-		methods: { 
-			async getCategory() { 
-				
-				try { 
-					const res = await fetch('https://dummyjson.com/products')
-					const response = await res.json();
-					this.products = response.products;
-
-				} catch (error) { 
-					this.msg = 'Error! Could not reach the API. ' + error 
-				} 
-			},
-
-			sortProducts() {
-				// Clone the products array to avoid mutating the original data
-				let sortedProducts = [...this.products];
-
-				switch (this.selectedSortOption) {
-				case 'name-asc':
-					sortedProducts.sort((a, b) => a.title.localeCompare(b.title));
-					break;
-				case 'name-desc':
-					sortedProducts.sort((a, b) => b.title.localeCompare(a.title));
-					break;
-				case 'price-asc':
-					sortedProducts.sort((a, b) => a.price - b.price);
-					break;
-				case 'price-desc':
-					sortedProducts.sort((a, b) => b.price - a.price);
-					break;
-				default:
-					break;
-				}
-				// Set the sorted products as the new products
-				this.products = sortedProducts
-			},
-			handlePageChange(newPage) {
-				this.currentPage = newPage;
-			},
-			toggleDropdownBrand() {
-				this.showDropdownBrand = !this.showDropdownBrand;
-			},
-			toggleDropdownCategory() {
-				this.showDropdownCategory = !this.showDropdownCategory;
-			},
-			selectCategory(category) {
-				this.selectedCategory = category;
-				// this.showDropdownCategory = false;
-			},
-			selectBrand(brand) {
-				this.selectedBrand = brand;
-				// this.showDropdownBrand = false;
-			},
-			unselectCategory() {
-				this.selectedCategory = '';
-			},
-			unselectBrand() {
-				this.selectedBrand = '';
-			},
-			unselectAll() {
-				this.unselectCategory();
-				this.unselectBrand();
-			},
-			resetCurrentPage() {
-				this.currentPage = 1;
+			products: {
+				deep: true,
+				handler(newVal) {
+					if (newVal.aggregations) {
+						this.colorOptions = this.extractAggregationOptions('colour');
+						this.sizeOptions = this.extractAggregationOptions('size');
+						this.priceOptions = this.extractAggregationOptions('price');
+					}
+				},
 			},
 		},
 		created() {
-			// Call getCategory when the component is created
-			this.getCategory();
-			// this.getCategoryGraphQL();
-			// Create a copy of the original unsorted products
+			const route = useRoute();
+			// Store the route parameter in local storage
+			localStorage.setItem('categoryId', route.params.id);
 		},
 	}
 </script>
 <style scoped>
 content {
 	display: flex;
+	flex-wrap: wrap;
+	/* align-items: center; */
+	justify-content: center;
+	width: 100%;
+}
+
+.category-title {
+	width: 100%;
+}
+
+.router-link {
+  text-decoration: none;
+  color: #000000;
+  text-align: left;
 }
 
 .sidebar{
 	display: flex;
 	flex-direction: column;
 	column-gap: 15px;
+	width: 15%;
+	
 }
 
 .filtered-box {
 	box-sizing: border-box;
 	height: fit-content;
-	width: 244px;
 	border: 1px solid #EEEEEE;
 	border-radius: 5px;
 	background-color: #FFFFFF;
@@ -281,7 +286,6 @@ content {
 .category-box {
 	box-sizing: border-box;
 	height: fit-content;
-	width: 244px;
 	border: 1px solid #EEEEEE;
 	border-radius: 5px;
 	background-color: #FFFFFF;
@@ -322,6 +326,19 @@ content {
   background-color: #f0f0f0;
 }
 
+.product-sort {
+	display: flex;
+}
+
+.product-show {
+	display: flex;
+}
+
+.product-box {
+	margin-left: 40px;
+	width: 50%;
+}
+
 .product-header {
 	display: flex;
 	justify-content: space-between;
@@ -336,10 +353,13 @@ content {
 
 .product-category {
 	display: flex;
+	flex-wrap: wrap;
+	justify-content: left;
+	margin-top: 24px;
 }
 
 .product-container {
-	flex: 0 0 calc(25% - 10px);
+	flex: 0 0 calc(15% - 10px);
 	margin: 5px;
 }
 
@@ -350,6 +370,7 @@ img {
 
 .product-name {
 	font-size: 20px;
+	text-decoration: none;
 }
 
 .product-price {
