@@ -1,5 +1,5 @@
 <template>
-  <div class="pageSizing">
+  <div class="pageSizing" id="html-body">
     <TheHeader />
     <router-view></router-view>
     <TheFooter />
