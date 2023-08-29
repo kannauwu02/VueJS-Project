@@ -1,10 +1,15 @@
 <template>
   <div class="index-index" v-html="home.content"></div>
   <NewSletter />
+  <TopSellers />
+  <CustomerReviews />
 </template>
 <script>
   import gql from 'graphql-tag';
   import NewSletter from '@/components/NewSletter.vue';
+  import TopSellers from '@/components/TopSellers.vue';
+  import CustomerReviews from '@/components/CustomerReviews.vue';
+  
   const $ = window.$
 
   export default {
@@ -16,7 +21,9 @@
       };
     },
     components: {
-      NewSletter
+      NewSletter,
+      TopSellers,
+      CustomerReviews
     },
     apollo: {
       home: gql`query {

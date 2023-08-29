@@ -373,8 +373,30 @@ img.pagebuilder-mobile-hidden {
   border: none;
 }
 
-.header-desktop .search-bar input::-webkit-input-placeholder,
-.header-desktop .search-bar input:-ms-input-placeholder,
+.header-desktop .search-bar input {
+  color: #8D929A;
+  font-family: 'Montserrat';
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 19px;
+}
+
+.header-desktop .search-bar input::-webkit-input-placeholder {
+  color: #8D929A;
+  font-family: 'Montserrat';
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 19px;
+}
+
+.header-desktop .search-bar input:-ms-input-placeholder {
+  color: #8D929A;
+  font-family: 'Montserrat';
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 19px;
+}
+
 .header-desktop .search-bar input::placeholder {
   color: #8D929A;
   font-family: 'Montserrat';
