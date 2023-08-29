@@ -1,6 +1,7 @@
 <template>
 <div v-if="categories && products">
-	<content>
+	<!-- Desktop content -->
+	<div class="content-desktop">
 		<h2 class="category-title">{{ categories.items[0].name }}</h2>
 		<div class="sidebar">
 			<div class="filtered-box">
@@ -99,7 +100,7 @@
 							<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
 						</a>
 					</div>
-					<p v-if="products.items.total_count === 0">No products.</p>
+					<p v-if="products.total_count === 0">No products available.</p>
 				</div>
 			</div>
 			<div class="product-footer" v-if="products.total_count > 0">
@@ -110,7 +111,123 @@
 				</div>
 			</div>
 		</div>
-	</content>
+	</div>
+
+	<!-- Mobile content -->
+	<div class="content-mobile">
+		<h2 class="category-title">{{ categories.items[0].name }}</h2>
+		
+		<div class="product-box">
+			<div class="product-header" v-if="products.total_count > 0">
+				<div class="sidebar-slideout" id="sidebar-slideout">
+					<div @click="sidebarSlideout">
+						<div class="filter-button">Filters:<img src="../assets/select_acc.png"></div>
+					</div>
+					<div class="sidebar-slideout-content">
+						<div class="sidebar-header">
+							<h2>FILTERS</h2><img src="../assets/close_white_icon.png" @click="sidebarSlideout">
+						</div>
+						<div class="filtered-box">
+							<h2 class="heading">FILTERED BY</h2>
+							<!-- add filter here -->
+							<div v-if="colorOption" class="filtered-category">
+								<img src="../assets/close_icon.png" @click="unselectColor"> Color: {{ colorOption }}	
+							</div>
+							<div v-if="sizeOption" class="filtered-category">
+								<img src="../assets/close_icon.png" @click="unselectSize"> Size: {{ sizeOption }}	
+							</div>
+							<div v-if="priceOption" class="filtered-category">
+								<img src="../assets/close_icon.png" @click="unselectPrice"> Price: {{ priceOption }}$	
+							</div>
+							
+							<p class="clear-button" @click="unselectAll">Clear all</p>
+						</div>
+						<div class="category-box">
+							<div class="category">
+								<h2 class="heading">TYPES</h2>
+								<!-- add types here -->
+								
+							</div>
+							<div class="category">
+								<h2 class="heading">FEATURES</h2>
+								<!-- add features here -->
+								<div class="filter" data-content-type="text">
+									<h3>COLOR</h3>
+									<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+										<div v-if="aggregation.attribute_code == 'colour'">
+											<p class="filter-text" v-for="option in aggregation.options" :key="option.value" @click="selectColor(option.label)">
+												{{ option.label }} ({{ option.count }})
+											</p>
+										</div>
+									</div>
+								</div>
+								<div class="filter" data-content-type="text">
+									<h3>SIZE</h3>
+									<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+										<div v-if="aggregation.attribute_code == 'size'">
+											<p class="filter-text" v-for="option in aggregation.options" :key="option.value" @click="selectSize(option.label)">
+												{{ option.label }} ({{ option.count }})
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="category">
+								<h2 class="heading">BRANDS</h2>
+								<!-- add brands here -->
+								
+							</div>
+							<div class="category">
+								<h2 class="heading">PRICE</h2>
+								<!-- add price here -->
+								<div class="filter" data-content-type="text">
+									<!-- <h3>Price</h3> -->
+									<div v-for="aggregation in products.aggregations" :key="aggregation.count">
+										<div v-if="aggregation.attribute_code == 'price'">
+											<p class="filter-text" v-for="option in aggregation.options" :key="option.value" @click="selectPrice(option.label)">
+												{{ option.label }}$ ({{ option.count }})
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="product-show">
+					<label for="show-select">Show:</label>
+					<select id="show-select" v-model="pageSize" @change="changeSize(pageSize)">
+						<option v-for="option in pageSizeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+					</select>
+				</div>
+				<div class="product-sort">
+					<label for="sort-select">Sort by:</label>
+					<select id="sort-select" v-model="currentSort"  @change="changeSort(currentSort)">
+						<option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+					</select>
+				</div>
+			</div>
+			<div class="product-content">
+				<div class="product-category" v-if="products">
+					<div class="product-container" v-for="product in products.items" :key="product.sku">
+						<a :href="'/product/' + product.sku" class="router-link"	>
+							<img :src="product.thumbnail.url" alt="Product Thumbnail">
+							<p class="product-name">{{ product.name }}</p>
+							<p class="product-price">{{ product.price_range.minimum_price.regular_price.value }} {{ product.price_range.minimum_price.regular_price.currency }}</p>
+						</a>
+					</div>
+					<p v-if="products.total_count === 0">No products available.</p>
+				</div>
+			</div>
+			<div class="product-footer" v-if="products.total_count > 0">
+				<div class="paginator">
+					<button @click="previousPage" :disabled="currentPage === 1">Previous</button>
+					<span>{{ currentPage }}</span>
+					<button @click="nextPage(products.page_info)" :disabled="currentPage === products.page_info.total_pages">Next</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <div v-else>
     Loading... <!-- or any other loading indicator you prefer -->
@@ -194,8 +311,7 @@
 						console.log(result.data.categories); // Access the query result here
 					}
 				},
-			},
-			
+			},	
 		},
 		methods: {
 			// Function to change sorting option
@@ -245,6 +361,10 @@
 				this.unselectSize();
 				this.unselectPrice();
 			},
+			sidebarSlideout() {
+				document.getElementById('sidebar-slideout').classList.toggle('active');
+				document.querySelector('body').classList.toggle('open-sidebar-slideout');
+			},
 		},
 		updated() {
 			// Unbind previous click event handlers
@@ -259,13 +379,58 @@
 	}
 </script>
 <style scoped>
-content {
+
+
+.content-desktop {
+	display: none;
+}
+
+.content-mobile {
 	display: flex;
 	flex-wrap: wrap;
 	/* align-items: center; */
 	justify-content: center;
 	width: 100%;
 	margin-bottom: 64px;
+}
+
+.open-sidebar-slideout {
+	height: 300vh;
+	overflow: hidden;
+}
+
+.sidebar-slideout-content {
+	background: #fff;
+	position: absolute;
+	top: 0;
+	width: 90%;
+	left: -100%;
+	transition: all 0.3s;
+	z-index: 1;
+}
+
+.sidebar-slideout.active .sidebar-slideout-content {
+	left: 0;
+	height: 300vh;
+	overflow-y: auto;
+}
+
+.sidebar-slideout-content .sidebar-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 15px;
+	background-color: #4A4A4A;
+}
+
+.sidebar-slideout-content .sidebar-header h2 {
+	color: #FFFFFF;
+	font-family: Oswald;
+}
+
+.sidebar-slideout-content .sidebar-header img {
+	width: 20px;
+	height: 20px;
 }
 
 .category-title {
@@ -280,9 +445,9 @@ content {
 }
 
 .router-link {
-  text-decoration: none;
-  color: #000000;
-  text-align: left;
+	text-decoration: none;
+	color: #000000;
+	text-align: left;
 }
 
 .sidebar{
@@ -312,6 +477,7 @@ content {
 	letter-spacing: 0;
 	line-height: 26px;
 	align-items: center;
+	margin-top: 4px;
 }
 
 .filtered-box .filtered-category img {
@@ -334,12 +500,11 @@ content {
 .category {
 	border-top: 1px solid #EBEBEB;
 	text-align: left;
-	margin: 0 15px;
+	padding: 0 15px;
 }
 
-
 .category:first-child {
-  border: none;
+	border: none;
 }
 
 .category h2 {
@@ -354,12 +519,12 @@ content {
 }
 
 .category h2:after {
-  content: '';
-  width: 14px;
-  height: 14px;
-  background-image: url('../assets/plus-footer-icon.jpg');
-  display: block;
-  background-size: contain;
+	content: '';
+	width: 14px;
+	height: 14px;
+	background-image: url('../assets/plus-footer-icon.jpg');
+	display: block;
+	background-size: contain;
 }
 
 .category h2.active:after {
@@ -372,10 +537,10 @@ content {
 	margin-top: -5px;
 }
 
-.filter-text {
+.filter-text, option, label, select {
 	color: #4A4A4A;
 	font-family: Montserrat;
-	font-size: 16px;
+	font-size: 14px;
 	letter-spacing: 0;
 	line-height: 26px;
 	cursor: pointer;
@@ -383,7 +548,22 @@ content {
 }
 
 .filter-text:hover {
-  background-color: #f0f0f0;
+	background-color: #f0f0f0;
+}
+
+.filter-button {
+	display: flex;
+	color: #4A4A4A;
+	font-family: Montserrat;
+	font-size: 14px;
+	letter-spacing: 0;
+	line-height: 22px;
+	align-items: center;
+}
+
+.filter-button img {
+	width: 16px;
+	height: 16px;
 }
 
 .clear-button{
@@ -420,46 +600,22 @@ content {
 	box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.08);
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-button, .remove-filter {
-  padding: 10px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  background-color: #f9f9f9;
-}
-
-.dropdown-content {
-  /* position: absolute; */
-  /* z-index: 1; */
-  /* background-color: white; */
-  /* border: 1px solid #ccc; */
-  /* width: 100%; */
-  max-height: 200px;
-  overflow-y: auto;
-  /* display: none; */
-}
-
-.dropdown-content p {
-  padding: 8px 12px;
-  margin: 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.dropdown-content p:hover {
-  background-color: #f0f0f0;
-}
-
 select {
 	height: 40px;
 }
 
+.sidebar-slideout {
+	display: flex;
+	align-self: center;
+}
+
 .product-sort {
 	display: flex;
+	align-items: center;
+}
+
+.product-sort select {
+	width: 116px;
 }
 
 .product-show {
@@ -468,8 +624,8 @@ select {
 }
 
 .product-box {
-	margin-left: 40px;
-	width: 58%;
+	width: 100%;
+	margin: 0;
 }
 
 .product-header {
@@ -487,9 +643,9 @@ select {
 .product-category {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: left;
 	margin-top: 24px;
-	column-gap: 21px;
+	justify-content: center;
+	column-gap: 10px;
 }
 
 .product-container {
@@ -524,4 +680,36 @@ img {
 .product-footer {
 	margin-top: 48px;
 }
+
+.product-container img {
+	width: 173px;
+	height: 173px;
+}
+
+@media only screen and (min-width: 1024px) {
+	.content-desktop {
+		display: flex;
+		flex-wrap: wrap;
+		/* align-items: center; */
+		justify-content: center;
+		width: 100%;
+		margin-bottom: 64px;
+	}
+
+	.content-mobile {
+		display: none;
+	}
+
+	.product-box {
+		margin-left: 40px;
+		width: 58%;
+	}
+
+	.product-category {
+		justify-content: left;
+		column-gap: 21px;
+	}
+
+}
+
 </style>

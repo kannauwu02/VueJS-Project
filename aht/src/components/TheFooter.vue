@@ -242,7 +242,7 @@
   #html-body .footer-bottom .pagebuilder-column-line {
     display: flex;
     align-items: center;
-    padding: 22px 20px;
+    padding: 22px 0px;
     max-width: 1280px;
     margin: 0 auto;
   }

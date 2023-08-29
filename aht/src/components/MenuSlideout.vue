@@ -17,19 +17,19 @@
                       <div class="menu-lv2-title"><span class="menu-lv2-title-text">{{ itemsLv2.name }}</span></div>
                       <div class="menu-lv3">
                         <template v-for="itemsLv3 in itemsLv2.children" :key="itemsLv3">
-                          <div class="menu-lv3-title"><a class="menu-lv3-title-text" :href="'/' + itemsLv3.url_path + '.html'">{{ itemsLv3.name }}</a></div>
+                          <div class="menu-lv3-title"><a class="menu-lv3-title-text" :href="'/category/' + itemsLv3.id">{{ itemsLv3.name }}</a></div>
                         </template>
                       </div>
                     </template>
                     <template v-else>
-                      <div class="menu-lv2-title"><a class="menu-lv2-title-text" :href="'/' + itemsLv2.url_path + '.html'">{{ itemsLv2.name }}</a></div>
+                      <div class="menu-lv2-title"><a class="menu-lv2-title-text" :href="'/category/' + itemsLv2.id">{{ itemsLv2.name }}</a></div>
                     </template>
                   </div>
                 </template>
               </div>
             </template>
             <template v-else>
-              <div class="menu-lv1-title"><a class="menu-lv1-title-text" :href="'/' + itemsLv1.url_path + '.html'">{{ itemsLv1.name }}</a></div>
+              <div class="menu-lv1-title"><a class="menu-lv1-title-text" :href="'/category/' + itemsLv1.id">{{ itemsLv1.name }}</a></div>
             </template>
           </div>
         </template>
