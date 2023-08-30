@@ -93,7 +93,7 @@
 
 .menu-navigation .menu-lv2 {
   position: absolute;
-  display: none;
+  pointer-events: none;
   top: 100%;
   width: 100%;
   left: 0;
@@ -101,6 +101,8 @@
   background: #fff;
   text-align: left;
   box-sizing: border-box;
+  transition: all 0.2s linear;
+  opacity: 0;
 }
 
 .menu-navigation .menu-lv1-title-text {
@@ -121,7 +123,9 @@
 }
 
 .menu-navigation .menu-lv1-content:hover .menu-lv2 {
+  pointer-events: all;
   display: flex;
+  opacity: 1;
 }
 
 .menu-navigation .menu-lv1 {

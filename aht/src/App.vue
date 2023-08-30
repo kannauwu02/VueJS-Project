@@ -31,6 +31,7 @@ export default {
 
 .blue-button {
   background-color: #3EB2FB;
+  transition: all 0.2s linear;
 }
 
 .blue-button:hover {

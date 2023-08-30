@@ -220,6 +220,7 @@
   width: max-content;
   display: block;
   text-decoration: none;
+  transition: all 0.2s linear;
 }
 
 .top-sellers .top-sellers-link p a:hover {

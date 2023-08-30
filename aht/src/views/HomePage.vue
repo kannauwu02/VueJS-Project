@@ -202,10 +202,12 @@
 .home-content-categories .pagebuilder-column {
   padding: 10px;
   box-sizing: border-box;
+  box-shadow: none;
+  transition: all 0.2s linear;
 }
 
 .home-content-categories .pagebuilder-column:hover {
-  box-shadow: 2px 2px 8px 0 rgba(0,0,0,0.2);
+  box-shadow: 2px 2px 8px 0 rgba(0,0,0,.2);
 }
 
 .home-content-categories {
@@ -328,6 +330,7 @@
   margin: 0 auto;
   width: max-content;
   text-decoration: none;
+  transition: all 0.2s linear;
 }
 
 .home-brands .view-all-brands a:hover {
