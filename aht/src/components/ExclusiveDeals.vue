@@ -1,6 +1,6 @@
 <template>
-  <div class="top-sellers-block">
-    <div v-for="item in topSellers.items" :key="item">
+  <div class="exclusive-deals-block">
+    <div v-for="item in exclusiveDeals.items" :key="item">
       <div v-html="item.content"></div>
     </div>
   </div>
@@ -12,15 +12,15 @@
   const $ = window.$
 
   export default {
-    name: "TopSellers",
+    name: "ExclusiveDeals",
     data() {
       return {
-        topSellers: ''
+        exclusiveDeals: ''
       };
     },
     apollo: {
-      topSellers: gql`query {
-        topSellers: cmsBlocks(identifiers: ["top-sellers"]) {
+      exclusiveDeals: gql`query {
+        exclusiveDeals: cmsBlocks(identifiers: ["exclusive-deals"]) {
           items {
             content
           }
@@ -47,7 +47,7 @@
         }
       }
 
-      const products = document.querySelector('.top-sellers .product-items')
+      const products = document.querySelector('.exclusive-deals .product-items')
       if (products) {
         setTimeout(function () {
           alignHeight(products.querySelectorAll('.product-item-link'))
@@ -61,12 +61,12 @@
       }
 
       if ( $(window).width() >= 1024 ) {
-        if (document.querySelector('.top-sellers .slick-slider')) {
-          $('.top-sellers .widget-product-grid').slick('unslick');
+        if (document.querySelector('.exclusive-deals .slick-slider')) {
+          $('.exclusive-deals .widget-product-grid').slick('unslick');
         }
       } else {
-        if (!document.querySelector('.top-sellers .slick-slider')) {
-          $('.top-sellers .widget-product-grid').slick({
+        if (!document.querySelector('.exclusive-deals .slick-slider')) {
+          $('.exclusive-deals .widget-product-grid').slick({
             dots: false,
             arrows: true,
             infinite: false,
@@ -89,12 +89,12 @@
 
       $(window).on('resize', function() {
         if ( $(window).width() >= 1024 ) {
-          if (document.querySelector('.top-sellers .slick-slider')) {
-            $('.top-sellers .widget-product-grid').slick('unslick');
+          if (document.querySelector('.exclusive-deals .slick-slider')) {
+            $('.exclusive-deals .widget-product-grid').slick('unslick');
           }
         } else {
-          if (!document.querySelector('.top-sellers .slick-slider')) {
-            $('.top-sellers .widget-product-grid').slick({
+          if (!document.querySelector('.exclusive-deals .slick-slider')) {
+            $('.exclusive-deals .widget-product-grid').slick({
               dots: false,
               arrows: true,
               infinite: false,
@@ -120,17 +120,21 @@
 </script>
 
 <style>
-.top-sellers-block {
-  padding: 24px 0;
+.exclusive-deals-block {
+  background: linear-gradient(270deg, #C0D854 0%, #277E93 100%);
+  padding: 17px 0;
 }
 
-.top-sellers h3,
-.top-sellers p {
-  margin: 0;
+.show-review .exclusive-deals-block {
+  padding: 17px 0 182px;
 }
 
-.top-sellers h3 {
-  color: #222;
+.exclusive-deals-icon {
+  display: none;
+}
+
+.exclusive-deals-block h3 {
+  color: #fff;
   font-family: 'Oswald';
   font-size: 28px;
   font-weight: 500;
@@ -139,11 +143,23 @@
   text-align: left;
   text-transform: uppercase;
   padding-left: 10px;
-  margin-bottom: 19px;
+  margin: 0;
 }
 
-.top-sellers .slick-next:after,
-.top-sellers .slick-prev:after {
+.exclusive-deals-block .title-image {
+  margin: 0 0 16px;
+}
+
+.exclusive-deals-block .title-image .pagebuilder-column:first-child {
+  width: 80% !important;
+}
+
+.exclusive-deals-block [data-content-type="products"] {
+  margin-left: 2px;
+}
+
+.exclusive-deals .slick-next:after,
+.exclusive-deals .slick-prev:after {
   background-repeat: no-repeat;
   background-size: contain;
   width: 38px;
@@ -153,117 +169,111 @@
   margin: auto;
 }
 
-.top-sellers .slick-next,
-.top-sellers .slick-prev {
+.exclusive-deals .slick-next,
+.exclusive-deals .slick-prev {
   right: 0;
   left: auto;
-  top: -36px;
+  top: -32px;
   width: 38px;
   height: 38px;
   z-index: 1;
 }
 
-.top-sellers .slick-prev {
+.exclusive-deals .slick-prev {
   right: 56px;
 }
 
-.top-sellers .slick-next {
+.exclusive-deals .slick-next {
   right: 10px;
 }
 
-.top-sellers .slick-prev:after {
+.exclusive-deals .slick-prev:after {
   background-image: url('../assets/Arrow_left_active_icon.png');
 }
 
-.top-sellers .slick-next:after {
+.exclusive-deals .slick-next:after {
   background-image: url('../assets/Arrow_right_active_icon.png');
 }
 
-.top-sellers .slick-prev.slick-disabled:after {
+.exclusive-deals .slick-prev.slick-disabled:after {
   background-image: url('../assets/Arrow_left_icon_white.png');
 }
 
-.top-sellers .slick-next.slick-disabled:after {
+.exclusive-deals .slick-next.slick-disabled:after {
   background-image: url('../assets/Arrow_right_icon_white.png');
 }
 
-.top-sellers .slick-arrow:before {
+.exclusive-deals .slick-arrow:before {
   display: none;
 }
 
-.top-sellers .product-item .product-image-container span.product-image-wrapper {
-    padding-bottom: 100%;
-    display: block;
-    position: relative;
-    overflow: hidden;
-}
-
-.top-sellers .slick-list {
+.exclusive-deals .slick-list {
   padding: 0 30% 0 0 !important;
 }
 
-.top-sellers .product-item.slick-slide {
+.exclusive-deals .product-item.slick-slide {
   padding: 10px 8px;
 }
 
-.top-sellers .top-sellers-link p a {
-  border-radius: 27px;
-  background-color: #3EB2FB;
-  color: #fff;
-  font-family: 'Montserrat';
-  font-size: 15px;
-  font-weight: bold;
-  letter-spacing: 0;
-  line-height: 13px;
-  padding: 20px 40px;
-  margin: 19px auto 0;
-  width: max-content;
-  display: block;
-  text-decoration: none;
-}
-
-.top-sellers .top-sellers-link p a:hover {
-  background-color: #159BEF;
-}
-
 @media only screen and (min-width: 768px) {
-  .top-sellers .slick-list {
+  .exclusive-deals .slick-list {
     padding: 0 12% 0 0 !important;
   }
 }
 
 @media only screen and (min-width: 1024px) {
-  .top-sellers .widget-product-grid {
+  .exclusive-deals-block {
+    padding: 46px 0 164px;
+  }
+
+  .show-review .exclusive-deals-block {
+    padding: 46px 0 156px;
+  }
+
+  .exclusive-deals-block .title-image {
+    margin: 0 0 29px;
+  }
+
+  .exclusive-deals-block h3 {
+    font-size: 42px;
+  }
+
+  .exclusive-deals .widget-product-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-gap: 40px 20px;
   }
 
-  .top-sellers h3 {
-    font-size: 42px;
-    padding-left: 0;
-    margin-bottom: 38px;
-  }
-
-  .top-sellers-block {
+  .exclusive-deals {
     max-width: 1280px;
-    padding: 64px 20px;
+    padding: 0 20px;
     margin: 0 auto;
   }
 
-  .top-sellers {
-    position: relative;
+  .exclusive-deals .widget-product-grid .product-item-details {
+    padding: 12px 16px 15px;
   }
 
-  .top-sellers-link {
-    position: absolute;
-    top: 0;
-    right: 0;
+  .exclusive-deals-icon {
+    display: block;
+    width: 100%;
   }
 
-  .top-sellers .top-sellers-link p a {
-    margin: 0;
-    padding: 16px 24px;
+  .exclusive-deals-icon img {
+    display: block;
+    max-height: 72px;
+    width: auto;
+    margin-left: auto;
+  }
+
+  .exclusive-deals-icon img.pagebuilder-mobile-only {
+    display: none;
+  }
+
+  .title-image .pagebuilder-column {
+    align-items: center;
+    flex-direction: row !important;
+    justify-content: unset !important;
   }
 }
 </style>

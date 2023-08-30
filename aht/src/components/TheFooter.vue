@@ -41,6 +41,10 @@
   padding-top: 24px;
 }
 
+.show-review #html-body footer {
+  padding-top: 177px;
+}
+
 #html-body footer p,
 #html-body footer h4 {
   margin: 0;
@@ -86,7 +90,8 @@
   max-height: 24px;
 }
 
-#html-body .footer-payment img:first-child {
+#html-body .footer-payment img:first-child,
+#html-body .footer-payment img:nth-child(3) {
   margin-bottom: 29px;
 }
 
@@ -180,7 +185,11 @@
 
 @media only screen and (min-width: 1024px) {
   #html-body footer {
-    padding-top: 48px;
+    padding-top: 77px;
+  }
+
+  .show-review #html-body footer {
+    padding-top: 166px;
   }
 
   #html-body .footer-top {

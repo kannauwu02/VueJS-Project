@@ -2,6 +2,7 @@
   <div class="index-index" v-html="home.content"></div>
   <NewSletter />
   <TopSellers />
+  <ExclusiveDeals />
   <CustomerReviews />
 </template>
 <script>
@@ -9,6 +10,7 @@
   import NewSletter from '@/components/NewSletter.vue';
   import TopSellers from '@/components/TopSellers.vue';
   import CustomerReviews from '@/components/CustomerReviews.vue';
+  import ExclusiveDeals from '@/components/ExclusiveDeals.vue';
   
   const $ = window.$
 
@@ -23,7 +25,8 @@
     components: {
       NewSletter,
       TopSellers,
-      CustomerReviews
+      CustomerReviews,
+      ExclusiveDeals
     },
     apollo: {
       home: gql`query {
@@ -160,6 +163,10 @@
   margin: 0;
 }
 
+#html-body .home-content-slider .pagebuilder-column-line {
+    display: block;
+}
+
 .home-content-slider {
   margin-bottom: 42px;
 }
@@ -193,7 +200,12 @@
 }
 /* Categories list */
 .home-content-categories .pagebuilder-column {
-  padding: 0 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.home-content-categories .pagebuilder-column:hover {
+  box-shadow: 2px 2px 8px 0 rgba(0,0,0,0.2);
 }
 
 .home-content-categories {
@@ -303,7 +315,7 @@
   margin: 0 0 30px;
 }
 
-.home-brands h4 {
+.home-brands .view-all-brands a {
   border-radius: 27px;
   background-color: #3EB2FB;
   color: #fff;
@@ -315,6 +327,11 @@
   padding: 20px 40px;
   margin: 0 auto;
   width: max-content;
+  text-decoration: none;
+}
+
+.home-brands .view-all-brands a:hover {
+  background-color: #159BEF;
 }
 
 .home-brands {
@@ -434,18 +451,27 @@
 
 @media only screen and (min-width: 1024px) {
   #html-body .home-content-categories .pagebuilder-column-line {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 30px 20px;
   }
 
   #html-body .home-content-categories .pagebuilder-column-line .pagebuilder-column {
-    width: 25%;
+    width: 100%;
     box-sizing: border-box;
   }
 
   .home-content-categories {
     padding: 0 20px;
     max-width: 1280px;
-    margin: 0 auto;
+    margin: 0 auto 60px;
+  }
+
+  .home-content-categories h3 {
+    font-size: 42px;
+    padding: 0;
+    margin-bottom: 42px;
+    text-align: center;
   }
 
   #html-body .home-brands .pagebuilder-column-line {
@@ -454,8 +480,20 @@
     align-items: center;
   }
 
+  #html-body .home-brands .pagebuilder-column-group {
+    max-width: 1280px;
+    padding: 0 20px;
+    margin: 0 auto;
+  }
+
+  #html-body .home-brands .pagebuilder-column-line {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 30px 20px;
+  }
+
   #html-body .home-brands .pagebuilder-column-line .pagebuilder-column {
-    width: 16.66%;
+    width: 100%;
   }
 
   #html-body .home-brands .pagebuilder-column-line .pagebuilder-column figure {
@@ -490,9 +528,8 @@
 }
 
 @media only screen and (min-width: 1280px) {
-  #html-body .home-content-categories .pagebuilder-column-line .pagebuilder-column {
-    width: 16.66%;
-    box-sizing: border-box;
+  #html-body .home-content-categories .pagebuilder-column-line {
+    grid-template-columns: repeat(6, 1fr);
   }
 
   .home-content-categories {

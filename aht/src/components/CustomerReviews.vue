@@ -28,6 +28,8 @@
       }`,
     },
     updated: function () {
+      document.querySelector('body').classList.add('show-review')
+      
       if (!document.querySelector('.customer-reviews .slick-slider')) {
         $('.customer-reviews .pagebuilder-column-line').slick({
           dots: true,
@@ -47,6 +49,10 @@
 .customer-reviews-block h5,
 .customer-reviews-block p {
   margin: 0;
+}
+
+.customer-reviews-block {
+  margin: -124px 0 -138px;
 }
 
 .customer-reviews-block h5 {
@@ -75,6 +81,7 @@
   margin: 0 10px;
   box-sizing: border-box;
   position: relative;
+  background: #fff;
 }
 
 .review-content p {
@@ -162,6 +169,14 @@
 }
 
 @media only screen and (min-width: 1024px) {
+  .customer-reviews-block {
+    margin: -66px 0 -100px;
+  }
+
+  .review-stars img {
+    max-height: 48px;
+  }
+
   .customer-reviews-block h5 {
     margin-bottom: 36px;
   }

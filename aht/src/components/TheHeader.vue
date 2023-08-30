@@ -18,9 +18,9 @@
           <div class="search">
             <div class="search-bar">
               <input type="text" placeholder="Search COOLRIVER…">
-              <div class="icon">
-                <img src="../assets/search_icon_dk.png" alt="">
-              </div>
+              <button class="icon blue-button">
+                <img src="../assets/search_icon.png" alt="">
+              </button>
             </div>
           </div>
           <div class="contact">
@@ -406,8 +406,16 @@ img.pagebuilder-mobile-hidden {
 }
 
 .header-desktop .search-bar .icon {
-  margin-left: -1px;
   cursor: pointer;
+  width: 54px;
+  border: none;
+}
+
+.header-desktop .search-bar .icon img {
+  max-height: 20px;
+  width: auto;
+  display: block;
+  margin: auto;
 }
 
 .contact-desktop {

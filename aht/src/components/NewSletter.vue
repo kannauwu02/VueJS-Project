@@ -5,7 +5,7 @@
     </div>
     <div class="action-newsletter">
       <input type="text" placeholder="Enter your email address…">
-      <button><span>Subscribe</span></button>
+      <button class="blue-button"><span>Subscribe</span></button>
     </div>
   </div>
 </template>
@@ -74,7 +74,6 @@
 }
 
 .action-newsletter button {
-  background-color: #46B3F8;
   color: #fff;
   font-family: 'Montserrat';
   font-size: 16px;
